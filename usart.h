@@ -13,7 +13,7 @@
 
 #define USART_DE_DDR 			DDRC
 #define USART_DE_PORT 			PORTC
-#define USART_DE_PIN	 		2
+#define USART_DE_PIN	 		3
 
 #define USART_DE_RECEIVE 		USART_DE_PORT &= ~(1 << USART_DE_PIN)
 #define USART_DE_SEND 			USART_DE_PORT |=  (1 << USART_DE_PIN)

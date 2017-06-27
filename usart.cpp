@@ -4,16 +4,14 @@
  *  Created on: 27 cze 2017
  *      Author: tomek
  */
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include "machine_type.h"
 #include "usart.h"
-#include "motor.h"
 #include "machine.h"
-#include "display.h"
 #include "timer.h"
 #include "modbus_rtu.h"
 
@@ -32,7 +30,7 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 	tx_head = 0;
 	tx_tail = 0;
 	RxEnable();
-	timer.Assign(1, 2, ModbusRTU35T);
+	timer.Assign(1, 1, ModbusRTU35T);	// 2ms
 }
 
 void Usart::RxEnable()
@@ -61,13 +59,11 @@ void Usart::ST_Init(UsartData* pdata) {}
 
 void Usart::ST_Idle(UsartData* pdata)
 {
-	display.Write(GetState());
 	timer.Disable(1);
 }
 
 void Usart::ST_ByteReceived(UsartData* pdata)
 {
-	display.Write(GetState());
 	uint8_t tmp_head;
 	tmp_head = (rx_head + 1) & UART_RX_BUF_MASK;
 	if(tmp_head == rx_tail)
@@ -92,7 +88,6 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 		usart_data.frame[i] = buf_rx[rx_tail];
 		i++;
 	}
-	display.Write(GetState());
 	modbus_rtu.ParseFrame(usart_data.frame, 8);
 	timer.Disable(1);
 }
@@ -145,7 +140,6 @@ void Usart::SendFrame(UsartData* pdata)
 	uint8_t tmp_tx_head;
 	uint8_t *w = pdata->frame;
 	uint16_t len = pdata->len;
-	display.Write(len);
 	while(len)
 	{
 		tmp_tx_head = (tx_head  + 1) & UART_TX_BUF_MASK;
@@ -169,21 +163,20 @@ void Usart::SendInt(UsartData *pdata)
 // --------- Debugowanie
 // http://mckmragowo.pl/mck/pliki/programming/clib/?f=va_start
 
-ISR(USART0_RX_vect)
+ISR(USART_RX_vect)
 {
 	usart_data.c = UDR0;
 	usart.CharReceived(&usart_data);
 }
 
-ISR(USART0_UDRE_vect)
+ISR(USART_UDRE_vect)
 {
 	usart.TXBufferEmpty();
 }
 
-ISR(USART0_TX_vect)
+ISR(USART_TX_vect)
 {
 	usart.TXComplete();
 }
-
 
 
