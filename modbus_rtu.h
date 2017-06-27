@@ -16,12 +16,16 @@ class ModbusRTU
 public:
 	ModbusRTU();
 	void ParseFrame(uint8_t* frame, uint8_t len);
+	void PrepareFrame(uint8_t* frame);
 	uint16_t HoldingRegisters[NUMBER_OF_HOLDING_REGISTERS];
 private:
 	void ReadHoldingRegisters(uint8_t *frame);
 	void FunctionNotSupported(uint8_t *frame);
 	uint16_t Checksum(uint8_t *frame, uint8_t len);
-	uint8_t SlaveAddr;
+	uint8_t slave_addr;
+	uint16_t starting_address;
+	uint16_t quantity;
+	uint8_t byte_count;
 };
 
 extern ModbusRTU modbus_rtu;

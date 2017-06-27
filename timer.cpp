@@ -51,8 +51,13 @@ void Timer::Disable(uint8_t HandlerNumber)
 void ModbusRTU35T()
 {
 	usart.RTU35T();
-//	PORTC ^= (1 << 0);
 }
+
+//void ElmSW()
+//{
+//	PORTC ^= (1 << 2);
+//}
+
 ISR(TIMER0_COMPA_vect)
 {
 	for(uint8_t n = 0; n < 8; n++)

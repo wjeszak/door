@@ -8,10 +8,14 @@
 
 #include "modbus_rtu.h"
 #include "usart.h"
+#include "electromagnet.h"
 
 ModbusRTU::ModbusRTU()
 {
-	SlaveAddr = 5;
+	slave_addr = 5;
+	starting_address = 0;
+	quantity = 0;
+	byte_count = 0;
 	HoldingRegisters[0] = 45;
 	HoldingRegisters[1] = 23;
 }
@@ -19,12 +23,13 @@ ModbusRTU::ModbusRTU()
 void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 {
 	uint16_t crc = Checksum(frame, len - 2);
-	if((frame[0] == SlaveAddr) && ((uint8_t) crc == frame[len - 2]) && ((uint8_t) (crc >> 8)) == frame[len - 1])
+	if((frame[0] == slave_addr) && ((uint8_t) crc == frame[len - 2]) && ((uint8_t) (crc >> 8)) == frame[len - 1])
 	{
 		switch(frame[1])
 		{
 			case 3:
 				ReadHoldingRegisters(frame);
+				electromagnet.CheckCoil();
 			break;
 			default:
 				FunctionNotSupported(frame);
@@ -34,17 +39,16 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 
 void ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
 {
-	uint16_t starting_address = frame[2] << 8 | frame[3];
-	uint16_t quantity 		  = frame[4] << 8 | frame[5];
+	starting_address = frame[2] << 8 | frame[3];
+	quantity		 = frame[4] << 8 | frame[5];
 	uint8_t error_code = 0;
-	uint8_t byte_count;
 
 	if((quantity > 125) || (quantity < 1)) error_code = 3;
 	if((starting_address + quantity) > NUMBER_OF_HOLDING_REGISTERS) error_code = 2;
 
 	if(error_code)
 	{
-		frame[0] = SlaveAddr;
+		frame[0] = slave_addr;
 		frame[1] = frame[1] + 0x80;
 		frame[2] = error_code;
 		uint16_t crc = Checksum(frame, 3);
@@ -52,11 +56,14 @@ void ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
 		frame[4] = (uint8_t) (crc >> 8);
 		usart_data.len = 5;
 		usart.SendFrame(&usart_data);
-		return;
+		//return;
 	}
+}
 
+void ModbusRTU::PrepareFrame(uint8_t* frame)
+{
 	byte_count = (uint8_t)(quantity * 2);
-	frame[0] = SlaveAddr;
+	frame[0] = slave_addr;
 	//frame[1] =
 	frame[2] = byte_count;
 
@@ -74,7 +81,7 @@ void ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
 
 void ModbusRTU::FunctionNotSupported(uint8_t *frame)
 {
-	frame[0] = SlaveAddr;
+	frame[0] = slave_addr;
 	frame[1] = frame[1] + 0x80;
 	frame[2] = 1; 									// Illegal function
 	uint16_t crc = Checksum(frame, 3);
