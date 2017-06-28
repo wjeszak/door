@@ -26,6 +26,7 @@ Electromagnet electromagnet;
 int main()
 {
 	DDRC |= (1 << 0); 		// led
+	PORTC |= (1 << 0);
 	sei();
 	while(1);
 }

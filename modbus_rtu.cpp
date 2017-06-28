@@ -11,7 +11,7 @@
 
 ModbusRTU::ModbusRTU()
 {
-	slave_addr = 7;
+	slave_addr = 8;
 	starting_address = 0;
 	quantity = 0;
 	byte_count = 0;
@@ -28,8 +28,8 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 		{
 			case 3:
 				if(ReadHoldingRegisters(frame) == 0)		// without error
-					PrepareFrame(usart_data.frame);
-				//electromagnet.TestCoil();
+					//PrepareFrame(usart_data.frame);
+				electromagnet.TestCoil();
 			break;
 			default:
 				FunctionNotSupported(frame);

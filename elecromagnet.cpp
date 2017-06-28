@@ -21,6 +21,7 @@ void ElectromOff()
 	ELECTROMAGNET_OFF;
 	modbus_rtu.PrepareFrame(usart_data.frame);
 	timer.Disable(2);
+	electromagnet.Event(0, NULL); // na chama
 }
 
 void Electromagnet::TestCoil(ElectromagnetData* pdata)
@@ -43,7 +44,7 @@ void Electromagnet::ST_Off(ElectromagnetData* pdata)
 void Electromagnet::ST_On(ElectromagnetData* pdata)
 {
 	ELECTROMAGNET_ON;
-	timer.Assign(2, 20, ElectromOff);
+	timer.Assign(2, 200, ElectromOff);
 }
 
 void Electromagnet::ST_Test(ElectromagnetData* pdata)
