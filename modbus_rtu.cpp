@@ -5,18 +5,17 @@
  *      Author: tomek
  */
 
-
 #include "modbus_rtu.h"
 #include "usart.h"
 #include "electromagnet.h"
 
 ModbusRTU::ModbusRTU()
 {
-	slave_addr = 5;
+	slave_addr = 7;
 	starting_address = 0;
 	quantity = 0;
 	byte_count = 0;
-	HoldingRegisters[0] = 45;
+	HoldingRegisters[0] = 7;
 	HoldingRegisters[1] = 23;
 }
 
@@ -28,8 +27,9 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 		switch(frame[1])
 		{
 			case 3:
-				ReadHoldingRegisters(frame);
-				electromagnet.CheckCoil();
+				if(ReadHoldingRegisters(frame) == 0)		// without error
+					PrepareFrame(usart_data.frame);
+				//electromagnet.TestCoil();
 			break;
 			default:
 				FunctionNotSupported(frame);
@@ -37,7 +37,7 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 	}
 }
 
-void ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
+uint8_t ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
 {
 	starting_address = frame[2] << 8 | frame[3];
 	quantity		 = frame[4] << 8 | frame[5];
@@ -56,8 +56,9 @@ void ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
 		frame[4] = (uint8_t) (crc >> 8);
 		usart_data.len = 5;
 		usart.SendFrame(&usart_data);
-		//return;
+		return error_code;
 	}
+	return 0;
 }
 
 void ModbusRTU::PrepareFrame(uint8_t* frame)

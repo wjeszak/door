@@ -11,10 +11,9 @@
 #include "modbus_rtu.h"
 #include "usart.h"
 
-Electromagnet::Electromagnet()
+Electromagnet::Electromagnet() : Machine(ST_MAX_STATES)
 {
 	ELECTROMAGNET_INIT;
-
 }
 
 void ElectromOff()
@@ -24,12 +23,31 @@ void ElectromOff()
 	timer.Disable(2);
 }
 
-bool Electromagnet::CheckCoil()
+void Electromagnet::TestCoil(ElectromagnetData* pdata)
 {
-	ELECTROMAGNET_ON;
-	timer.Assign(2, 100, ElectromOff);
-	return true;
+	const uint8_t Transitions[] =
+	{
+		// next						// current
+		ST_ON,						// ST_OFF
+		ST_NOT_ALLOWED, 			// ST_ON
+		ST_NOT_ALLOWED				// ST_TEST
+	};
+	Event(Transitions[current_state], pdata);
 }
 
+void Electromagnet::ST_Off(ElectromagnetData* pdata)
+{
 
+}
+
+void Electromagnet::ST_On(ElectromagnetData* pdata)
+{
+	ELECTROMAGNET_ON;
+	timer.Assign(2, 20, ElectromOff);
+}
+
+void Electromagnet::ST_Test(ElectromagnetData* pdata)
+{
+
+}
 

@@ -18,12 +18,17 @@
 Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 {
 	uint8_t ubrr = F_CPU / 16 / baud - 1;
-	UBRR0H = (uint8_t)(ubrr >> 8);
-	UBRR0L = (uint8_t)ubrr;
+	US_UBRRH = (uint8_t)(ubrr >> 8);
+	US_UBRRL = (uint8_t)ubrr;
 
-	UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << TXCIE0);
+	US_UCSRB |= (1 << US_RXEN) | (1 << US_TXEN) | (1 << US_TXCIE);
+#if defined (__AVR_ATmega88PA__)
 	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
+#endif
 
+#if defined (__AVR_ATmega8__)
+	UCSRC |= (1 << URSEL) | (1 << UCSZ1) | (1 << UCSZ0);
+#endif
 	USART_DE_INIT;
 	rx_head = 0;
 	rx_tail = 0;
@@ -36,23 +41,23 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 void Usart::RxEnable()
 {
 	USART_DE_RECEIVE;
-	UCSR0B |= (1 << RXEN0) | (1 << RXCIE0);
+	US_UCSRB |= (1 << US_RXEN) | (1 << US_RXCIE);
 }
 
 void Usart::RxDisable()
 {
-	UCSR0B &= ~((1 << RXEN0) | (1 << RXCIE0));
+	US_UCSRB &= ~((1 << US_RXEN) | (1 << US_RXCIE));
 }
 
 void Usart::TxEnable()
 {
 	USART_DE_SEND;
-	UCSR0B |= (1 << UDRIE0);
+	US_UCSRB |= (1 << US_UDRIE);
 }
 
 void Usart::TxDisable()
 {
-	UCSR0B &= ~(1 << UDRIE0);
+	US_UCSRB &= ~(1 << US_UDRIE);
 }
 
 void Usart::ST_Init(UsartData* pdata) {}
@@ -121,7 +126,7 @@ void Usart::TXBufferEmpty(UsartData* pdata)
 	if(tx_head != tx_tail)
 	{
 		tx_tail = (tx_tail + 1) & UART_TX_BUF_MASK;
-		UDR0 = buf_tx[tx_tail];
+		US_UDR = buf_tx[tx_tail];
 	}
 	else
 	{
@@ -163,9 +168,9 @@ void Usart::SendInt(UsartData *pdata)
 // --------- Debugowanie
 // http://mckmragowo.pl/mck/pliki/programming/clib/?f=va_start
 
-ISR(USART_RX_vect)
+ISR(US_RX)
 {
-	usart_data.c = UDR0;
+	usart_data.c = US_UDR;
 	usart.CharReceived(&usart_data);
 }
 
@@ -174,7 +179,7 @@ ISR(USART_UDRE_vect)
 	usart.TXBufferEmpty();
 }
 
-ISR(USART_TX_vect)
+ISR(US_TX)
 {
 	usart.TXComplete();
 }

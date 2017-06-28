@@ -11,8 +11,13 @@
 #include "modbus_rtu.h"
 #include "electromagnet.h"
 
-
+#if defined (__AVR_ATmega88PA__)
 Timer timer(T0_PS_64, 229);
+#endif
+#if defined (__AVR_ATmega8__)
+Timer timer(T1_PS_64, 229);
+#endif
+
 Usart usart;
 UsartData usart_data;
 ModbusRTU modbus_rtu;
@@ -21,8 +26,6 @@ Electromagnet electromagnet;
 int main()
 {
 	DDRC |= (1 << 0); 		// led
-	//DDRC |= (1 << 2);
-	//timer.Assign(0, 1000, ElmSW);
 	sei();
 	while(1);
 }
