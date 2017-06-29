@@ -16,6 +16,14 @@ Electromagnet::Electromagnet() : Machine(ST_MAX_STATES)
 	ELECTROMAGNET_INIT;
 }
 
+void MakeTest()
+{
+	timer.Disable(3);
+	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN)) modbus_rtu.HoldingRegisters[0] = 35;
+	else
+		modbus_rtu.HoldingRegisters[0] = 200;
+}
+
 void ElectromOff()
 {
 	ELECTROMAGNET_OFF;
@@ -45,6 +53,7 @@ void Electromagnet::ST_On(ElectromagnetData* pdata)
 {
 	ELECTROMAGNET_ON;
 	timer.Assign(2, 200, ElectromOff);
+	timer.Assign(3, 100, MakeTest);
 }
 
 void Electromagnet::ST_Test(ElectromagnetData* pdata)
