@@ -11,12 +11,12 @@
 
 ModbusRTU::ModbusRTU()
 {
-	slave_addr = 8;
+	slave_addr = 7;
 	starting_address = 0;
 	quantity = 0;
 	byte_count = 0;
-	HoldingRegisters[0] = 7;
-	HoldingRegisters[1] = 23;
+//	HoldingRegisters[0] = 7;
+//	HoldingRegisters[1] = 23;
 }
 
 void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)

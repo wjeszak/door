@@ -19,7 +19,7 @@ Electromagnet::Electromagnet() : Machine(ST_MAX_STATES)
 void MakeTest()
 {
 	timer.Disable(3);
-	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN)) modbus_rtu.HoldingRegisters[0] = 35;
+	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN)) modbus_rtu.HoldingRegisters[0] = 5;
 	else
 		modbus_rtu.HoldingRegisters[0] = 200;
 }
