@@ -11,7 +11,7 @@
 #include <stdio.h>			// NULL
 #include "timer.h"
 #include "usart.h"
-
+#include "electromagnet.h"
 volatile TimerHandler STHandlers[8];
 
 #if defined (__AVR_ATmega88PA__)
@@ -74,10 +74,12 @@ void ModbusRTU35T()
 	usart.RTU35T();
 }
 
-//void ElmSW()
-//{
-//	PORTC ^= (1 << 2);
-//}
+void ElectromSW()
+{
+	ELECTROMAGNET_CTRL_PORT |= (1 << ELECTROMAGNET_CTRL_PIN);
+	timer.Disable(7);
+}
+
 #if defined (__AVR_ATmega88PA__)
 ISR(TIMER0_COMPA_vect)
 #endif

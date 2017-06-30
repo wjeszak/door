@@ -72,6 +72,7 @@ public:
 };
 extern void DisplayRefresh();
 extern void ModbusRTU35T();
+void ElectromSW();
 //extern void ElmSW();
 
 extern Timer timer;

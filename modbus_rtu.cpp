@@ -8,10 +8,11 @@
 #include "modbus_rtu.h"
 #include "usart.h"
 #include "electromagnet.h"
+#include "timer.h"
 
 ModbusRTU::ModbusRTU()
 {
-	slave_addr = 7;
+	slave_addr = 1;
 	starting_address = 0;
 	quantity = 0;
 	byte_count = 0;
@@ -31,10 +32,25 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 					//PrepareFrame(usart_data.frame);
 				electromagnet.TestCoil();
 			break;
+			case 6:
+				//uint16_t time;
+				if(WriteSingleRegister(frame) == 0)
+				{
+				uint16_t time = (usart_data.frame[4] << 8) | usart_data.frame[5];
+					ELECTROMAGNET_CTRL_PORT &= ~(1 << ELECTROMAGNET_CTRL_PIN);
+					timer.Assign(7, time, ElectromSW);
+				}
+			break;
 			default:
 				FunctionNotSupported(frame);
 		}
 	}
+}
+
+uint8_t ModbusRTU::WriteSingleRegister(uint8_t* frame)
+{
+	if(frame[5] != 0) return 0;
+		return 1;
 }
 
 uint8_t ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
