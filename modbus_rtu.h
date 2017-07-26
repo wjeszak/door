@@ -10,7 +10,7 @@
 
 #include <inttypes.h>
 
-#define NUMBER_OF_HOLDING_REGISTERS 	20
+#define NUMBER_OF_REGISTERS 				1
 
 class ModbusRTU
 {
@@ -18,7 +18,7 @@ public:
 	ModbusRTU();
 	void ParseFrame(uint8_t* frame, uint8_t len);
 	void PrepareFrame(uint8_t* frame);
-	uint16_t HoldingRegisters[NUMBER_OF_HOLDING_REGISTERS];
+	uint16_t Registers[NUMBER_OF_REGISTERS];
 private:
 	uint8_t ReadHoldingRegisters(uint8_t *frame);
 	uint8_t WriteSingleRegister(uint8_t* frame);

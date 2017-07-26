@@ -183,5 +183,3 @@ ISR(US_TX)
 {
 	usart.TXComplete();
 }
-
-

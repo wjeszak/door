@@ -10,6 +10,7 @@
 #include "timer.h"
 #include "modbus_rtu.h"
 #include "electromagnet.h"
+#include "status.h"
 
 #if defined (__AVR_ATmega88PA__)
 Timer timer(T0_PS_64, 229);
@@ -25,6 +26,7 @@ Electromagnet electromagnet;
 
 int main()
 {
+	AdcInit();
 	DDRC |= (1 << 0); 		// led
 	PORTC |= (1 << 0);
 	sei();

@@ -9,6 +9,7 @@
 #include "usart.h"
 #include "electromagnet.h"
 #include "timer.h"
+#include "status.h"
 
 ModbusRTU::ModbusRTU()
 {
@@ -16,8 +17,6 @@ ModbusRTU::ModbusRTU()
 	starting_address = 0;
 	quantity = 0;
 	byte_count = 0;
-//	HoldingRegisters[0] = 7;
-//	HoldingRegisters[1] = 23;
 }
 
 void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
@@ -29,8 +28,9 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 		{
 			case 3:
 				if(ReadHoldingRegisters(frame) == 0)		// without error
-					//PrepareFrame(usart_data.frame);
-				electromagnet.TestCoil();
+					Registers[0] = GetStatus();
+					PrepareFrame(usart_data.frame);
+				//electromagnet.TestCoil();
 			break;
 			case 6:
 				//uint16_t time;
@@ -60,7 +60,7 @@ uint8_t ModbusRTU::ReadHoldingRegisters(uint8_t* frame)
 	uint8_t error_code = 0;
 
 	if((quantity > 125) || (quantity < 1)) error_code = 3;
-	if((starting_address + quantity) > NUMBER_OF_HOLDING_REGISTERS) error_code = 2;
+	if((starting_address + quantity) > NUMBER_OF_REGISTERS) error_code = 2;
 
 	if(error_code)
 	{
@@ -86,8 +86,8 @@ void ModbusRTU::PrepareFrame(uint8_t* frame)
 
 	for(uint8_t i = 0; i < quantity; i++)
 	{
-		frame[3 + 2 * i] 	 = (uint8_t)(HoldingRegisters[starting_address + i] >> 8);
-		frame[3 + 2 * i + 1] = (uint8_t)(HoldingRegisters[starting_address + i]);
+		frame[3 + 2 * i] 	 = (uint8_t)(Registers[starting_address + i] >> 8);
+		frame[3 + 2 * i + 1] = (uint8_t)(Registers[starting_address + i]);
 	}
 	uint16_t crc = Checksum(frame, (3 + byte_count));
 	frame[3 + byte_count] = (uint8_t) crc;
