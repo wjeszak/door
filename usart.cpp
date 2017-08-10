@@ -22,7 +22,7 @@ Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
 	US_UBRRL = (uint8_t)ubrr;
 
 	US_UCSRB |= (1 << US_RXEN) | (1 << US_TXEN) | (1 << US_TXCIE);
-#if defined (__AVR_ATmega88PA__)
+#if defined (__AVR_ATmega88P__)
 	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
 #endif
 

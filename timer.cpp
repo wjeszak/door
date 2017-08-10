@@ -13,7 +13,7 @@
 #include "electromagnet.h"
 volatile TimerHandler STHandlers[8];
 
-#if defined (__AVR_ATmega88PA__)
+#if defined (__AVR_ATmega88P__)
 Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 {
 	for(uint8_t n = 0; n < 8; n++)
@@ -79,7 +79,7 @@ void ElectromSW()
 	timer.Disable(7);
 }
 
-#if defined (__AVR_ATmega88PA__)
+#if defined (__AVR_ATmega88P__)
 ISR(TIMER0_COMPA_vect)
 #endif
 
@@ -103,5 +103,3 @@ ISR(TIMER1_COMPA_vect)
 		}
 	}
 }
-
-

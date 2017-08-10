@@ -15,7 +15,7 @@
 // UART baud = 19200 bps -> tchar = 1 / (192000 / 10 bits frame) = 0.5 ms
 
 // poprawic kolejnosc bitow
-#if defined (__AVR_ATmega88PA__)
+#if defined (__AVR_ATmega88P__)
 enum T0Prescallers
 {
 	T0_PS_0 = 0,
@@ -51,7 +51,7 @@ struct TimerHandler
 class Timer
 {
 public:
-#if defined (__AVR_ATmega88PA__)
+#if defined (__AVR_ATmega88P__)
 	Timer(T0Prescallers Prescaller, uint8_t Tick);
 #endif
 #if defined (__AVR_ATmega8__)

@@ -11,7 +11,7 @@
 #include <inttypes.h>
 #include "machine.h"
 
-#if defined (__AVR_ATmega88PA__)
+#if defined (__AVR_ATmega88P__)
 	#define USART_DE_DDR 			DDRC
 	#define USART_DE_PORT 			PORTC
 	#define USART_DE_PIN	 		3
@@ -31,7 +31,7 @@
 #define UART_TX_BUF_MASK 		(UART_TX_BUF_SIZE - 1)
 #define UART_RX_BUF_MASK 		(UART_RX_BUF_SIZE - 1)
 
-#if defined (__AVR_ATmega88PA__)
+#if defined (__AVR_ATmega88P__)
 #define US_UBRRH 	UBRR0H
 #define US_UBRRL 	UBRR0L
 #define US_UCSRB	UCSR0B

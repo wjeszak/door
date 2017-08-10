@@ -10,7 +10,7 @@
 
 #include <inttypes.h>
 #include "machine.h"
-#if defined (__AVR_ATmega88PA__)
+#if defined (__AVR_ATmega88P__)
 #define ELECTROMAGNET_CTRL_DDR 			DDRC
 #define ELECTROMAGNET_CTRL_PORT 		PORTC
 #define ELECTROMAGNET_CTRL_PIN 			2

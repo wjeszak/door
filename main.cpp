@@ -12,7 +12,7 @@
 #include "electromagnet.h"
 #include "status.h"
 
-#if defined (__AVR_ATmega88PA__)
+#if defined (__AVR_ATmega88P__)
 Timer timer(T0_PS_64, 229);
 #endif
 #if defined (__AVR_ATmega8__)
