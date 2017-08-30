@@ -72,7 +72,7 @@ public:
 class Usart : public Machine
 {
 public:
-	Usart(uint16_t baud = 19400);
+	Usart(uint16_t baud = 19200);
 	void CharReceived(UsartData* pdata);							// RX_vect callback
 	void SendFrame(UsartData* pdata);
 	void SendInt(UsartData* pdata);

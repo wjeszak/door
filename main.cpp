@@ -11,6 +11,7 @@
 #include "modbus_rtu.h"
 #include "electromagnet.h"
 #include "status.h"
+#include "transoptors.h"
 
 #if defined (__AVR_ATmega88P__)
 Timer timer(T0_PS_64, 229);
@@ -23,6 +24,7 @@ Usart usart;
 UsartData usart_data;
 ModbusRTU modbus_rtu;
 Electromagnet electromagnet;
+Transoptors transoptors;
 
 int main()
 {

@@ -29,7 +29,7 @@ void ModbusRTU::ParseFrame(uint8_t* frame, uint8_t len)
 		{
 			case 3:
 				if(ReadHoldingRegisters(frame) == 0)		// without error
-					Registers[0] = GetTransoptors();
+					Registers[0] = transoptors.GetDoorState();
 					PrepareFrame(usart_data.frame);
 				//electromagnet.TestCoil();
 			break;
