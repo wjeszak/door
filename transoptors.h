@@ -25,10 +25,6 @@
 #define TRANSOPTOR_CONTROL_PIN 				PINB
 #define TRANSOPTOR_CONTROL 					2
 
-#define F03_OPTICAL_SWITCHES_FAULT 			0x03
-#define F05_ELECTROMAGNET_FAULT 			0x05
-#define F06_CLOSE_THE_DOOR 					0x06
-
 class Transoptors
 {
 public:

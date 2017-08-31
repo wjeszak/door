@@ -7,6 +7,7 @@
 
 #ifndef MACHINE_H_
 #define MACHINE_H_
+
 #include <inttypes.h>
 #include <stdio.h>			// NULL
 

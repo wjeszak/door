@@ -12,6 +12,7 @@
 #include "electromagnet.h"
 #include "status.h"
 #include "transoptors.h"
+#include "door.h"
 
 #if defined (__AVR_ATmega88P__)
 Timer timer(T0_PS_64, 229);
@@ -25,6 +26,7 @@ UsartData usart_data;
 ModbusRTU modbus_rtu;
 Electromagnet electromagnet;
 Transoptors transoptors;
+Door door;
 
 int main()
 {
@@ -32,7 +34,10 @@ int main()
 	DDRC |= (1 << 0); 		// led
 	PORTC |= (1 << 0);
 	sei();
-	while(1);
+	while(1)
+	{
+		door.GetState();
+	}
 }
 
 
