@@ -8,7 +8,8 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 #include <avr/io.h>
-#include "machine.h"
+
+#include "state_machine.h"
 
 // PCB door: F_CPU = 73728000 Hz
 // OCR = (F_CPU / 64 / 500) - 1 = 229		~2 ms

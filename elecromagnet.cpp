@@ -11,7 +11,7 @@
 #include "modbus_rtu.h"
 #include "usart.h"
 
-Electromagnet::Electromagnet() : Machine(ST_MAX_STATES)
+Electromagnet::Electromagnet() : StateMachine(ST_MAX_STATES)
 {
 	ELECTROMAGNET_INIT;
 }

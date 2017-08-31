@@ -11,11 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "usart.h"
-#include "machine.h"
 #include "timer.h"
 #include "modbus_rtu.h"
+#include "state_machine.h"
 
-Usart::Usart(uint16_t baud) : Machine(ST_MAX_STATES)
+Usart::Usart(uint16_t baud) : StateMachine(ST_MAX_STATES)
 {
 	uint8_t ubrr = F_CPU / 16 / baud - 1;
 	US_UBRRH = (uint8_t)(ubrr >> 8);

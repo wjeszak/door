@@ -9,7 +9,8 @@
 #define ELECTROMAGNET_H_
 
 #include <inttypes.h>
-#include "machine.h"
+#include "state_machine.h"
+
 #if defined (__AVR_ATmega88P__)
 #define ELECTROMAGNET_CTRL_DDR 			DDRC
 #define ELECTROMAGNET_CTRL_PORT 		PORTC
@@ -46,7 +47,7 @@ public:
 
 };
 
-class Electromagnet : public Machine
+class Electromagnet : public StateMachine
 {
 public:
 	Electromagnet();

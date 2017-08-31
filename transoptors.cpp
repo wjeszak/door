@@ -35,8 +35,8 @@ uint8_t Transoptors::Read()
 
 uint16_t Transoptors::GetDoorState()
 {
-	uint8_t val_tmp = Read();
+//	uint8_t val_tmp = Read();
 //	if(val_tmp != 0) state = F06_CLOSE_THE_DOOR << 8;
 //	else state = 0;
-	return state;
+//	return state;
 }
