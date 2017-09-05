@@ -68,11 +68,6 @@ void Timer::Disable(uint8_t HandlerNumber)
 	STHandlers [HandlerNumber].Active = false;
 }
 
-void ModbusRTU35T()
-{
-	usart.RTU35T();
-}
-
 void ElectromSW()
 {
 	ELECTROMAGNET_CTRL_PORT |= (1 << ELECTROMAGNET_CTRL_PIN);
