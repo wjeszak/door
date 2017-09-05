@@ -32,8 +32,8 @@ Door door;
 int main()
 {
 	AdcInit();
-	DDRC |= (1 << 0); 		// led
-	PORTC |= (1 << 0);
+	DDRC |= (1 << 0) | (1 << 1); 		// led
+	PORTC |= (1 << 0) | (1 << 1);
 	sei();
 	while(1)
 	{

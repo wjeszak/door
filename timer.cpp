@@ -11,23 +11,23 @@
 #include "timer.h"
 #include "usart.h"
 #include "electromagnet.h"
-volatile TimerHandler STHandlers[8];
 
 #if defined (__AVR_ATmega88P__)
 Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 {
-	for(uint8_t n = 0; n < 8; n++)
+	for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
 	{
-		STHandlers[n].Active = false;
-		STHandlers[n].Counter = 0;
-		STHandlers[n].Interval = 0;
-		STHandlers[n].fp = NULL;
+		timer_handlers[n].active = false;
+		timer_handlers[n].counter = 0;
+		timer_handlers[n].interval = 0;
+		timer_handlers[n].fp = NULL;
 	}
 
 	TCCR0A |= (1 << WGM01); 		// CTC
 	TCCR0B |= Prescaller;
 	OCR0A = Tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
 	TIMSK0 |= (1 << OCIE0A);
+	main_timer_prescaler = 0;
 }
 #endif
 
@@ -36,36 +36,61 @@ Timer::Timer(T1Prescallers Prescaller, uint8_t Tick)
 {
 	for(uint8_t n = 0; n < 8; n++)
 	{
-		STHandlers[n].Active = false;
-		STHandlers[n].Counter = 0;
-		STHandlers[n].Interval = 0;
-		STHandlers[n].fp = NULL;
+		timer_handlers[n].active = false;
+		timer_handlers[n].counter = 0;
+		timer_handlers[n].interval = 0;
+		timer_handlers[n].fp = NULL;
 	}
 
 	TCCR1B |= (1 << WGM12); 		// CTC
 	TCCR1B |= Prescaller;
 	OCR1A = Tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
 	TIMSK |= (1 << OCIE1A);
+	main_timer_prescaler = 0;
 }
 #endif
 
-void Timer::Assign(uint8_t HandlerNumber, uint64_t Interval, void(*fp)())
+void Timer::Irq()
 {
-	STHandlers [HandlerNumber].Interval = Interval;
-	STHandlers [HandlerNumber].Counter = 0;
-	STHandlers [HandlerNumber].Active = true;
-	STHandlers [HandlerNumber].fp = fp;
+	main_timer_prescaler++;
+	if(main_timer_prescaler == MAIN_TIMER_PRESCALER)
+	{
+		main_timer_prescaler = 0;
+		for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
+		{
+			if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
+			{
+				if ((timer_handlers[n].counter == timer_handlers[n].interval))
+				{
+					timer_handlers[n].counter = 0;
+					timer_handlers[n].fp();
+				}
+				else
+				{
+					timer_handlers[n].counter++;
+				}
+			}
+		}
+	}
 }
 
-void Timer::Enable(uint8_t HandlerNumber)
+void Timer::Assign(uint8_t handler_id, uint16_t interval, void(*fp)())
 {
-	STHandlers [HandlerNumber].Active = true;
-	STHandlers [HandlerNumber].Counter = 0;
+	timer_handlers[handler_id].interval = interval;
+	timer_handlers[handler_id].counter = 0;
+	timer_handlers[handler_id].active = true;
+	timer_handlers[handler_id].fp = fp;
 }
 
-void Timer::Disable(uint8_t HandlerNumber)
+void Timer::Enable(uint8_t handler_id)
 {
-	STHandlers [HandlerNumber].Active = false;
+	timer_handlers[handler_id].active = true;
+	timer_handlers[handler_id].counter = 0;
+}
+
+void Timer::Disable(uint8_t handler_id)
+{
+	timer_handlers[handler_id].active = false;
 }
 
 void ElectromSW()
@@ -82,19 +107,5 @@ ISR(TIMER0_COMPA_vect)
 ISR(TIMER1_COMPA_vect)
 #endif
 {
-	for(uint8_t n = 0; n < 8; n++)
-	{
-		if ((STHandlers[n].Active) && (STHandlers[n].fp != NULL))
-		{
-			if ((STHandlers[n].Counter == STHandlers[n].Interval))
-			{
-				STHandlers[n].Counter = 0;
-				STHandlers [n].fp();
-			}
-			else
-			{
-				STHandlers[n].Counter++;
-			}
-		}
-	}
+	timer.Irq();
 }

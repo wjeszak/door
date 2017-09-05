@@ -10,12 +10,15 @@
 #include <avr/io.h>
 
 #include "state_machine.h"
+#define MAIN_TIMER_PRESCALER 			36
+#define NUMBER_OF_TIMERS 				8
+
+#define TIMER_TEST_ELECTROMAGNET		0
 
 // PCB door: F_CPU = 73728000 Hz
 // OCR = (F_CPU / 64 / 500) - 1 = 229		~2 ms
 // UART baud = 19200 bps -> tchar = 1 / (192000 / 10 bits frame) = 0.5 ms
 
-// poprawic kolejnosc bitow
 #if defined (__AVR_ATmega88P__)
 enum T0Prescallers
 {
@@ -41,14 +44,6 @@ enum T1Prescallers
 };
 #endif
 
-struct TimerHandler
-{
-	void(*fp)();
-	bool Active;
-	uint64_t Interval;
-	uint64_t Counter;
-};
-
 class Timer
 {
 public:
@@ -58,24 +53,25 @@ public:
 #if defined (__AVR_ATmega8__)
 	Timer(T1Prescallers Prescaller, uint8_t Tick);
 #endif
-	void Assign(uint8_t HandlerNumber, uint64_t Interval, void(*fp)());
-//	int8_t Assign (uint64_t Interval, void(*fp)());
-	void UnAssign (uint8_t HandlerNumber);
-	void Enable (uint8_t HandlerNumber);
-	void Disable (uint8_t HandlerNumber);
-	void Hold (uint8_t HandlerNumber);
-	void UnHold (uint8_t HandlerNumber);
-	bool Enabled (uint8_t HandlerNumber);
-	void SetInterval (uint8_t HandlerNumber, uint64_t Interval);
-	uint64_t GetInterval (uint8_t HandlerNumber);
-//	void SetPrescaller (T0Prescallers Prescaller);
-	void SetPeriod (uint8_t Tick);
+	void Irq();
+	void Assign(uint8_t handler_id, uint16_t interval, void(*fp)());
+	void Enable (uint8_t handler_id);
+	void Disable (uint8_t handler_id);
+private:
+	struct TimerHandler
+	{
+		void(*fp)();
+		bool active;
+		uint16_t interval;
+		uint16_t counter;
+	};
+	TimerHandler timer_handlers[NUMBER_OF_TIMERS];
+	uint8_t main_timer_prescaler;
 };
-extern void DisplayRefresh();
-extern void ModbusRTU35T();
-void ElectromSW();
-//extern void ElmSW();
 
 extern Timer timer;
+
+void ElectromSW();
+
 
 #endif /* TIMER_H_ */

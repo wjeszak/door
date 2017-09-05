@@ -23,9 +23,14 @@ void Comm_prot::Parse(uint8_t* frame, uint8_t len)
 	{
 		switch(frame[1])
 		{
-		case 0x03:
+		case 0x01:
 			PORTC &= ~(1 << 0);
+			ELECTROMAGNET_ON;
 			Prepare(usart_data.frame);
+		break;
+		case 0x02:
+			ELECTROMAGNET_OFF;
+			PORTC &= ~(1 << 1);
 		break;
 		}
 	}
