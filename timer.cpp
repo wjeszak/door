@@ -11,6 +11,7 @@
 #include "timer.h"
 #include "usart.h"
 #include "electromagnet.h"
+#include "comm_prot.h"
 
 #if defined (__AVR_ATmega88P__)
 Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
@@ -27,7 +28,6 @@ Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 	TCCR0B |= Prescaller;
 	OCR0A = Tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
 	TIMSK0 |= (1 << OCIE0A);
-	main_timer_prescaler = 0;
 }
 #endif
 
@@ -46,29 +46,23 @@ Timer::Timer(T1Prescallers Prescaller, uint8_t Tick)
 	TCCR1B |= Prescaller;
 	OCR1A = Tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
 	TIMSK |= (1 << OCIE1A);
-	main_timer_prescaler = 0;
 }
 #endif
 
 void Timer::Irq()
 {
-	main_timer_prescaler++;
-	if(main_timer_prescaler == MAIN_TIMER_PRESCALER)
+	for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
 	{
-		main_timer_prescaler = 0;
-		for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
+		if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
 		{
-			if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
+			if ((timer_handlers[n].counter == timer_handlers[n].interval))
 			{
-				if ((timer_handlers[n].counter == timer_handlers[n].interval))
-				{
-					timer_handlers[n].counter = 0;
-					timer_handlers[n].fp();
-				}
-				else
-				{
-					timer_handlers[n].counter++;
-				}
+				timer_handlers[n].counter = 0;
+				timer_handlers[n].fp();
+			}
+			else
+			{
+				timer_handlers[n].counter++;
 			}
 		}
 	}
@@ -95,8 +89,12 @@ void Timer::Disable(uint8_t handler_id)
 
 void ElectromSW()
 {
-	ELECTROMAGNET_CTRL_PORT |= (1 << ELECTROMAGNET_CTRL_PIN);
-	timer.Disable(7);
+	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN))
+		comm.Prepare(1);
+	else
+		comm.Prepare(2);
+	ELECTROMAGNET_OFF;
+	timer.Disable(TIMER_TEST_ELECTROMAGNET);
 }
 
 #if defined (__AVR_ATmega88P__)

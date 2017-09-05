@@ -15,7 +15,7 @@ class Comm_prot
 public:
 	Comm_prot();
 	void Parse(uint8_t* frame, uint8_t len);
-	void Prepare(uint8_t* frame);
+	void Prepare(uint8_t res);
 private:
 	uint8_t Crc8(uint8_t *frame, uint8_t len);
 	uint8_t slave_addr;

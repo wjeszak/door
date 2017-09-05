@@ -10,7 +10,7 @@
 #include <avr/io.h>
 
 #include "state_machine.h"
-#define MAIN_TIMER_PRESCALER 			36
+
 #define NUMBER_OF_TIMERS 				8
 
 #define TIMER_TEST_ELECTROMAGNET		0
@@ -66,12 +66,10 @@ private:
 		uint16_t counter;
 	};
 	TimerHandler timer_handlers[NUMBER_OF_TIMERS];
-	uint8_t main_timer_prescaler;
 };
 
 extern Timer timer;
 
 void ElectromSW();
-
 
 #endif /* TIMER_H_ */

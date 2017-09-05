@@ -7,6 +7,7 @@
 
 #include "comm_prot.h"
 #include "usart.h"
+#include "timer.h"
 #include "electromagnet.h"
 #include "status.h"
 #include "transoptors.h"
@@ -26,7 +27,7 @@ void Comm_prot::Parse(uint8_t* frame, uint8_t len)
 		case 0x01:
 			PORTC &= ~(1 << 0);
 			ELECTROMAGNET_ON;
-			Prepare(usart_data.frame);
+			timer.Assign(TIMER_TEST_ELECTROMAGNET, 50, ElectromSW);
 		break;
 		case 0x02:
 			ELECTROMAGNET_OFF;
@@ -36,12 +37,12 @@ void Comm_prot::Parse(uint8_t* frame, uint8_t len)
 	}
 }
 
-void Comm_prot::Prepare(uint8_t* frame)
+void Comm_prot::Prepare(uint8_t res)
 {
-	frame[0] = slave_addr;
-	frame[1] = 5;
-	frame[2] = Crc8(frame, 2);
-	frame[3] = 0x0A;
+	usart_data.frame[0] = slave_addr;
+	usart_data.frame[1] = res;
+	usart_data.frame[2] = Crc8(usart_data.frame, 2);
+	usart_data.frame[3] = 0x0A;
 	usart_data.len = 4;
 	usart.SendFrame(&usart_data);
 }

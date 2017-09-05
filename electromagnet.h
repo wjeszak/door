@@ -41,36 +41,17 @@
 #define ELECTROMAGNET_OFF 				ELECTROMAGNET_CTRL_PORT |=  (1 << ELECTROMAGNET_CTRL_PIN)
 
 #endif
+
 class ElectromagnetData : public EventData
 {
 public:
 
 };
 
-class Electromagnet : public StateMachine
+class Electromagnet
 {
 public:
 	Electromagnet();
-	void On();
-	void Off();
-	void TestCoil(ElectromagnetData* pdata = NULL);
-private:
-	void ST_Off(ElectromagnetData* pdata);
-	void ST_On(ElectromagnetData* pdata);
-	void ST_Test(ElectromagnetData* pdata);
-
-	enum States {ST_OFF = 0, ST_ON, ST_TEST_COIL, ST_MAX_STATES};
-	const StateStruct* GetStateMap()
-		{
-			// to jest sprytne bo StateMap jest tworzone nie na stosie dzieki temu mozna zwrocic adres
-			static const StateStruct StateMap[] =
-			{
-				{reinterpret_cast<StateFunc>(&Electromagnet::ST_Off)},
-				{reinterpret_cast<StateFunc>(&Electromagnet::ST_On)},
-				{reinterpret_cast<StateFunc>(&Electromagnet::ST_Test)}
-			};
-			return &StateMap[0];
-		}
 };
 
 extern Electromagnet electromagnet;

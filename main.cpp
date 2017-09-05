@@ -16,7 +16,7 @@
 #include "door.h"
 
 #if defined (__AVR_ATmega88P__)
-Timer timer(T0_PS_64, 229);
+Timer timer(T0_PS_64, 115);
 #endif
 #if defined (__AVR_ATmega8__)
 Timer timer(T1_PS_64, 229);
