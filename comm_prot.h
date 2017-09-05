@@ -10,11 +10,13 @@
 
 #include <inttypes.h>
 
+#define FRAME_LENGTH 		4
+
 class Comm_prot
 {
 public:
 	Comm_prot();
-	void Parse(uint8_t* frame, uint8_t len);
+	void Parse(uint8_t* frame);
 	void Prepare(uint8_t res);
 private:
 	uint8_t Crc8(uint8_t *frame, uint8_t len);

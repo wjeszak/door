@@ -87,12 +87,12 @@ void Timer::Disable(uint8_t handler_id)
 	timer_handlers[handler_id].active = false;
 }
 
-void ElectromSW()
+void ElectromagnetTest()
 {
 	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN))
-		comm.Prepare(1);
+		comm.Prepare(0);
 	else
-		comm.Prepare(2);
+		comm.Prepare(1);
 	ELECTROMAGNET_OFF;
 	timer.Disable(TIMER_TEST_ELECTROMAGNET);
 }

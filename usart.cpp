@@ -81,7 +81,7 @@ void Usart::ST_ByteReceived(UsartData* pdata)
 
 void Usart::ST_FrameReceived(UsartData* pdata)
 {
-	usart_data.len = 4;
+//	usart_data.len = 4;
 	uint8_t i = 0;
 	while(rx_tail != rx_head)
 	{
@@ -89,7 +89,7 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 		usart_data.frame[i] = rx_buf[rx_tail];
 		i++;
 	}
-	comm.Parse(pdata->frame, 4);
+	comm.Parse(pdata->frame);
 }
 
 void Usart::EV_NewByte(UsartData* pdata)

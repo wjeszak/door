@@ -70,6 +70,6 @@ private:
 
 extern Timer timer;
 
-void ElectromSW();
+void ElectromagnetTest();
 
 #endif /* TIMER_H_ */

@@ -17,7 +17,7 @@ Comm_prot::Comm_prot()
 	slave_addr = 1;
 }
 
-void Comm_prot::Parse(uint8_t* frame, uint8_t len)
+void Comm_prot::Parse(uint8_t* frame)
 {
 	uint8_t crc = Crc8(frame, 2);
 	if((frame[0] == slave_addr) && (frame[2] == crc))
@@ -25,13 +25,14 @@ void Comm_prot::Parse(uint8_t* frame, uint8_t len)
 		switch(frame[1])
 		{
 		case 0x01:
-			PORTC &= ~(1 << 0);
 			ELECTROMAGNET_ON;
-			timer.Assign(TIMER_TEST_ELECTROMAGNET, 50, ElectromSW);
+			timer.Assign(TIMER_TEST_ELECTROMAGNET, 50, ElectromagnetTest);
 		break;
 		case 0x02:
-			ELECTROMAGNET_OFF;
-			PORTC &= ~(1 << 1);
+			if(transoptors.Check())
+				comm.Prepare(1);
+			else
+				comm.Prepare(0);
 		break;
 		}
 	}
@@ -43,7 +44,7 @@ void Comm_prot::Prepare(uint8_t res)
 	usart_data.frame[1] = res;
 	usart_data.frame[2] = Crc8(usart_data.frame, 2);
 	usart_data.frame[3] = 0x0A;
-	usart_data.len = 4;
+	usart_data.len = FRAME_LENGTH;
 	usart.SendFrame(&usart_data);
 }
 
