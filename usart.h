@@ -64,8 +64,8 @@ class UsartData : public EventData
 {
 public:
 	uint8_t c;
-	uint8_t frame[64];
-	uint16_t len;
+	uint8_t frame[UART_BUF_SIZE];
+	uint8_t len;
 };
 
 class Usart : public StateMachine
@@ -83,13 +83,11 @@ private:
 	void TxEnable();
 	void TxDisable();
 	// States functions
-	void ST_Init(UsartData* pdata);
 	void ST_Idle(UsartData* pdata);
 	void ST_ByteReceived(UsartData* pdata);
 	void ST_FrameReceived(UsartData* pdata);
-	enum States {ST_INIT = 0, ST_IDLE, ST_BYTE_RECEIVED, ST_FRAME_RECEIVED, ST_MAX_STATES};
+	enum States {ST_IDLE = 0, ST_BYTE_RECEIVED, ST_FRAME_RECEIVED, ST_MAX_STATES};
 	BEGIN_STATE_MAP
-		STATE_MAP_ENTRY(&Usart::ST_Init)
 		STATE_MAP_ENTRY(&Usart::ST_Idle)
 		STATE_MAP_ENTRY(&Usart::ST_ByteReceived)
 		STATE_MAP_ENTRY(&Usart::ST_FrameReceived)

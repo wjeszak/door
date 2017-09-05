@@ -10,7 +10,8 @@
 
 #include <avr/io.h>
 #include <inttypes.h>
-#include "modbus_rtu.h"
+
+#include "comm_prot.h"
 
 #define TRANSOPTORS_DDR 					DDRD
 #define TRANSOPTORS_PORT 					PORTD

@@ -6,9 +6,10 @@
  */
 
 #include <avr/io.h>
+
+#include "comm_prot.h"
 #include "electromagnet.h"
 #include "timer.h"
-#include "modbus_rtu.h"
 #include "usart.h"
 
 Electromagnet::Electromagnet() : StateMachine(ST_MAX_STATES)
@@ -19,15 +20,15 @@ Electromagnet::Electromagnet() : StateMachine(ST_MAX_STATES)
 void MakeTest()
 {
 	timer.Disable(3);
-	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN)) modbus_rtu.Registers[0] = 5;
-	else
-		modbus_rtu.Registers[0] = 200;
+//	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN)) modbus_rtu.Registers[0] = 5;
+//	else
+//		modbus_rtu.Registers[0] = 200;
 }
 
 void ElectromOff()
 {
 	ELECTROMAGNET_OFF;
-	modbus_rtu.PrepareFrame(usart_data.frame);
+//	modbus_rtu.PrepareFrame(usart_data.frame);
 	timer.Disable(2);
 	electromagnet.Event(0, NULL); // na chama
 }

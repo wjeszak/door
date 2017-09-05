@@ -6,9 +6,10 @@
  */
 #include <avr/io.h>
 #include <avr/interrupt.h>
+
+#include "comm_prot.h"
 #include "usart.h"
 #include "timer.h"
-#include "modbus_rtu.h"
 #include "electromagnet.h"
 #include "status.h"
 #include "transoptors.h"
@@ -23,7 +24,7 @@ Timer timer(T1_PS_64, 229);
 
 Usart usart;
 UsartData usart_data;
-ModbusRTU modbus_rtu;
+Comm_prot comm;
 Electromagnet electromagnet;
 Transoptors transoptors;
 Door door;
@@ -36,7 +37,7 @@ int main()
 	sei();
 	while(1)
 	{
-		door.GetState();
+	//	door.GetState();
 	}
 }
 

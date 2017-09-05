@@ -11,13 +11,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "usart.h"
-#include "timer.h"
-#include "modbus_rtu.h"
 #include "state_machine.h"
+#include "comm_prot.h"
 
 Usart::Usart(uint16_t baud) : StateMachine(ST_MAX_STATES)
 {
-	uint8_t ubrr = F_CPU / 16 / baud - 1;
+	uint16_t ubrr = F_CPU / 16 / baud - 1;
 	US_UBRRH = (uint8_t)(ubrr >> 8);
 	US_UBRRL = (uint8_t)ubrr;
 
@@ -59,8 +58,6 @@ void Usart::TxDisable()
 	US_UCSRB &= ~(1 << US_UDRIE);
 }
 
-void Usart::ST_Init(UsartData* pdata) {}
-
 void Usart::ST_Idle(UsartData* pdata)
 {
 
@@ -84,7 +81,7 @@ void Usart::ST_ByteReceived(UsartData* pdata)
 
 void Usart::ST_FrameReceived(UsartData* pdata)
 {
-	usart_data.len = 8;
+	usart_data.len = 4;
 	uint8_t i = 0;
 	while(rx_tail != rx_head)
 	{
@@ -92,20 +89,18 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 		usart_data.frame[i] = rx_buf[rx_tail];
 		i++;
 	}
-	modbus_rtu.ParseFrame(usart_data.frame, 8);
+	comm.Parse(pdata->frame, 4);
 }
 
 void Usart::EV_NewByte(UsartData* pdata)
 {
 	const uint8_t Transitions[] =
 	{
-		// musi byc obsluga jesli znak przyjdzie w stanie INIT
-		ST_BYTE_RECEIVED,			// ST_INIT
 		ST_BYTE_RECEIVED, 			// ST_IDLE
-		ST_BYTE_RECEIVED,			// ST_BYTE_RECEIVED
-		ST_BYTE_RECEIVED			// ST_FRAME_RECEIVED
 	};
 	Event(Transitions[current_state], pdata);
+
+	if(pdata->c == 0x0A) InternalEvent(ST_FRAME_RECEIVED, pdata);
 }
 
 void Usart::EV_TXBufferEmpty(UsartData* pdata)
@@ -131,7 +126,7 @@ void Usart::SendFrame(UsartData* pdata)
 	RxDisable();
 	uint8_t tmp_tx_head;
 	uint8_t *w = pdata->frame;
-	uint16_t len = pdata->len;
+	uint8_t len = pdata->len;
 	while(len)
 	{
 		tmp_tx_head = (tx_head  + 1) & UART_BUF_MASK;
@@ -140,18 +135,8 @@ void Usart::SendFrame(UsartData* pdata)
 		tx_head = tmp_tx_head;
 		len--;
 	}
-
 	TxEnable();
 }
-/*
-void Usart::SendInt(UsartData *pdata)
-{
-	char buf[10];
-	itoa(pdata->c, buf, 10);
-	//pdata->frame = buf;
-	SendFrame(pdata);
-}
-*/
 
 ISR(US_RX)
 {
