@@ -6,14 +6,34 @@
  */
 
 #include "door.h"
+#include "transoptors.h"
+
+uint8_t seq1[5] = {0, 1, 2, 3, 7};
+uint8_t tab[6];
 
 Door::Door()
 {
-	state = 0;
+	state = transoptors.Read();
+	position = 0;
 }
 
-uint16_t Door::GetState()
+void Door::UpdatePosition()
 {
-	return 4;
+	static uint8_t i;
+	uint8_t state_tmp = transoptors.Read();
+	if(state != state_tmp)
+	{
+		state = state_tmp;
+		tab[i++] = state;
+	}
+	if(i == 5)
+	{
+		i = 0;
+		position++;
+	}
 }
 
+uint8_t Door::GetPosition()
+{
+	return position;
+}

@@ -11,6 +11,7 @@
 #include "electromagnet.h"
 #include "status.h"
 #include "transoptors.h"
+#include "door.h"
 
 Comm_prot::Comm_prot()
 {
@@ -34,6 +35,10 @@ void Comm_prot::Parse(uint8_t* frame)
 			else
 				comm.Prepare(0);
 		break;
+		case 0x03:
+			comm.Prepare(door.GetPosition());
+		break;
+
 		}
 	}
 }

@@ -6,7 +6,6 @@
  */
 
 #include <avr/io.h>
-
 #include "comm_prot.h"
 #include "electromagnet.h"
 #include "timer.h"

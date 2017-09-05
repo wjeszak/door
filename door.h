@@ -22,10 +22,11 @@ class Door
 {
 public:
 	Door();
-	uint16_t GetState();
+	void UpdatePosition();
+	uint8_t GetPosition();
 	void SetState(uint8_t state);
 private:
-	uint16_t state;
+	uint8_t state, position;
 };
 
 extern Door door;
