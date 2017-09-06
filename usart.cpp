@@ -75,7 +75,7 @@ void Usart::ST_ByteReceived(UsartData* pdata)
 	{
 		rx_head = tmp_head;
 		rx_buf[tmp_head] = pdata->c;
-		pdata->len++;
+	//	pdata->len++;
 	}
 }
 
@@ -88,6 +88,7 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 		usart_data.frame[i] = rx_buf[rx_tail];
 		i++;
 	}
+	InternalEvent(ST_IDLE, pdata);
 	comm.Parse(pdata->frame);
 }
 
@@ -95,6 +96,7 @@ void Usart::EV_NewByte(UsartData* pdata)
 {
 	BEGIN_TRANSITION_MAP								// current state
         TRANSITION_MAP_ENTRY(ST_BYTE_RECEIVED)			// ST_IDLE
+		TRANSITION_MAP_ENTRY(ST_BYTE_RECEIVED)			// ST_BYTE_RECEIVED
     END_TRANSITION_MAP(pdata)
 
 	if(pdata->c == 0x0A) InternalEvent(ST_FRAME_RECEIVED, pdata);
