@@ -93,11 +93,9 @@ void Usart::ST_FrameReceived(UsartData* pdata)
 
 void Usart::EV_NewByte(UsartData* pdata)
 {
-	const uint8_t Transitions[] =
-	{
-		ST_BYTE_RECEIVED, 			// ST_IDLE
-	};
-	Event(Transitions[current_state], pdata);
+	BEGIN_TRANSITION_MAP								// current state
+        TRANSITION_MAP_ENTRY(ST_BYTE_RECEIVED)			// ST_IDLE
+    END_TRANSITION_MAP(pdata)
 
 	if(pdata->c == 0x0A) InternalEvent(ST_FRAME_RECEIVED, pdata);
 }
@@ -125,14 +123,13 @@ void Usart::SendFrame(UsartData* pdata)
 	RxDisable();
 	uint8_t tmp_tx_head;
 	uint8_t *w = pdata->frame;
-	uint8_t len = pdata->len;
-	while(len)
+	while(pdata->len)
 	{
 		tmp_tx_head = (tx_head  + 1) & UART_BUF_MASK;
 		while(tmp_tx_head == tx_tail) {}
 		tx_buf[tmp_tx_head] = *w++;
 		tx_head = tmp_tx_head;
-		len--;
+		pdata->len--;
 	}
 	TxEnable();
 }

@@ -8,7 +8,7 @@
 #include "door.h"
 #include "transoptors.h"
 
-uint8_t seq1[5] = {0, 1, 2, 3, 7};
+uint8_t seq1[5] = {1, 2, 3, 7};
 uint8_t tab[6];
 
 Door::Door()
@@ -26,8 +26,12 @@ void Door::UpdatePosition()
 		state = state_tmp;
 		tab[i++] = state;
 	}
-	if(i == 5)
+	if(i == 4)
 	{
+		for(uint8_t j = 0; j < 4; j++)
+		{
+			if(tab[j] != seq1[j]) return;
+		}
 		i = 0;
 		position++;
 	}
