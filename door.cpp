@@ -19,7 +19,7 @@ Door::Door()
 
 void Door::UpdatePosition()
 {
-	static uint8_t i;
+/*	static uint8_t i;
 	uint8_t state_tmp = transoptors.Read();
 	if(state != state_tmp)
 	{
@@ -35,6 +35,8 @@ void Door::UpdatePosition()
 		i = 0;
 		position++;
 	}
+*/
+	position = transoptors.Read();
 }
 
 uint8_t Door::GetPosition()

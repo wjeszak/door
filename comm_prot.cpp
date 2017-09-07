@@ -15,7 +15,7 @@
 
 Comm_prot::Comm_prot()
 {
-	slave_addr = 1;
+	slave_addr = 6;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -27,7 +27,7 @@ void Comm_prot::Parse(uint8_t* frame)
 		{
 		case 0x01:
 			ELECTROMAGNET_ON;
-			timer.Assign(TIMER_TEST_ELECTROMAGNET, 50, ElectromagnetTest);
+			timer.Assign(TIMER_TEST_ELECTROMAGNET, 4, ElectromagnetTest);
 		break;
 		case 0x02:
 			if(transoptors.Check())
