@@ -40,6 +40,3 @@ int main()
 		door.UpdatePosition();
 	}
 }
-
-
-
