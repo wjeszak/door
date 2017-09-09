@@ -8,20 +8,19 @@
 #include "comm_prot.h"
 #include "usart.h"
 #include "timer.h"
-#include "electromagnet.h"
-#include "status.h"
 #include "transoptors.h"
+#include "electromagnet.h"
 #include "door.h"
 
 Comm_prot::Comm_prot()
 {
-	slave_addr = 6;
+	address = 6;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
 {
 	uint8_t crc = Crc8(frame, 2);
-	if((frame[0] == slave_addr) && (frame[2] == crc))
+	if((frame[0] == address) && (frame[2] == crc))
 	{
 		switch(frame[1])
 		{
@@ -45,7 +44,7 @@ void Comm_prot::Parse(uint8_t* frame)
 
 void Comm_prot::Prepare(uint8_t res)
 {
-	usart_data.frame[0] = slave_addr;
+	usart_data.frame[0] = address;
 	usart_data.frame[1] = res;
 	usart_data.frame[2] = Crc8(usart_data.frame, 2);
 	usart_data.frame[3] = 0x0A;

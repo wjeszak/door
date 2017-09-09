@@ -5,15 +5,11 @@
  *      Author: tomek
  */
 
-#include <avr/io.h>
 #include <avr/interrupt.h>
-#include <stdio.h>			// NULL
 #include "timer.h"
-#include "usart.h"
 #include "electromagnet.h"
 #include "comm_prot.h"
 
-#if defined (__AVR_ATmega88P__)
 Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 {
 	for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
@@ -29,25 +25,6 @@ Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 	OCR0A = Tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
 	TIMSK0 |= (1 << OCIE0A);
 }
-#endif
-
-#if defined (__AVR_ATmega8__)
-Timer::Timer(T1Prescallers Prescaller, uint8_t Tick)
-{
-	for(uint8_t n = 0; n < 8; n++)
-	{
-		timer_handlers[n].active = false;
-		timer_handlers[n].counter = 0;
-		timer_handlers[n].interval = 0;
-		timer_handlers[n].fp = NULL;
-	}
-
-	TCCR1B |= (1 << WGM12); 		// CTC
-	TCCR1B |= Prescaller;
-	OCR1A = Tick; 					// :		F_CPU / preskaler / 200 Hz = OCR
-	TIMSK |= (1 << OCIE1A);
-}
-#endif
 
 void Timer::Irq()
 {
@@ -87,6 +64,11 @@ void Timer::Disable(uint8_t handler_id)
 	timer_handlers[handler_id].active = false;
 }
 
+ISR(TIMER0_COMPA_vect)
+{
+	timer.Irq();
+}
+// -----------------------------------------------------------------
 void ElectromagnetTest()
 {
 	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN))
@@ -95,15 +77,4 @@ void ElectromagnetTest()
 		comm.Prepare(1);
 	ELECTROMAGNET_OFF;
 	timer.Disable(TIMER_TEST_ELECTROMAGNET);
-}
-
-#if defined (__AVR_ATmega88P__)
-ISR(TIMER0_COMPA_vect)
-#endif
-
-#if defined (__AVR_ATmega8__)
-ISR(TIMER1_COMPA_vect)
-#endif
-{
-	timer.Irq();
 }
