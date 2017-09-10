@@ -10,18 +10,19 @@
 
 #include "state_machine.h"
 
-#define DOOR_STATUS_CLOSED 					0xC0
-#define DOOR_STATUS_OPENED_AND_CLOSED 		0xD0
-#define DOOR_STATUS_DOOR_NOT_YET_OPENED		0x80
-#define DOOR_STATUS_OPENED 					0x40
+#define DOOR_STATE_CLOSED 					0xC0
+#define DOOR_STATE_OPENED_AND_CLOSED 		0xD0
+#define DOOR_STATE_DOOR_NOT_YET_OPENED		0x80
+#define DOOR_STATE_OPENED 					0x40
+#define DOOR_STATE_OPENED_1STOP				0x01
 
-#define F03_OPTICAL_SWITCHES_FAULT 			(0x03 << 8)
-#define F05_ELECTROMAGNET_FAULT 			(0x05 << 8)
-#define F06_CLOSE_THE_DOOR 					(0x06 << 8)
+#define F03_OPTICAL_SWITCHES_FAULT 			0xF0
+#define F05_ELECTROMAGNET_FAULT 			0xF1
 
 class DoorData : public EventData
 {
 public:
+	uint8_t val;
 };
 
 class Door : public StateMachine
@@ -29,11 +30,10 @@ class Door : public StateMachine
 public:
 	Door();
 	// Events
-	void EV_Close(DoorData* pdata = NULL);
-	void EV_Open(DoorData* pdata = NULL);
-	void SetStatus(uint16_t st);
-	void UpdateStatus();
-	uint16_t GetStatus();
+	void EV_ChangeVal(DoorData* pdata);
+	void SetStatus(uint8_t st);
+	void Poll();
+	uint8_t GetStatus();
 private:
 	// States functions
 	void ST_Init(DoorData* pdata = NULL);
@@ -46,7 +46,8 @@ private:
 		STATE_MAP_ENTRY(&Door::ST_Opened)
 	END_STATE_MAP
 
-	uint16_t status;
+	uint8_t status;
+	bool zero_achieved;
 };
 
 extern Door door;

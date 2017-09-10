@@ -27,6 +27,6 @@ int main()
 	sei();
 	while(1)
 	{
-		door.UpdateStatus();
+		door.Poll();
 	}
 }

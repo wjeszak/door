@@ -42,13 +42,12 @@ void Comm_prot::Parse(uint8_t* frame)
 	}
 }
 
-void Comm_prot::Prepare(uint16_t status)
+void Comm_prot::Prepare(uint8_t status)
 {
 	usart_data.frame[0] = address;
-	usart_data.frame[1] = status >> 8;
-	usart_data.frame[2] = status & 0xFF;
-	usart_data.frame[3] = Crc8(usart_data.frame, 2);
-	usart_data.frame[4] = 0x0A;
+	usart_data.frame[1] = status;
+	usart_data.frame[2] = Crc8(usart_data.frame, 2);
+	usart_data.frame[3] = 0x0A;
 	usart_data.len = FRAME_LENGTH_RESPONSE;
 	usart.SendFrame(&usart_data);
 }
