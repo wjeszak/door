@@ -14,7 +14,6 @@ uint8_t tab[6];
 Door::Door() : StateMachine(ST_MAX_STATES)
 {
 	ST_Init();
-	status = 0;
 }
 
 void Door::SetStatus(uint16_t st)
