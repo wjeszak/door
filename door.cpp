@@ -11,13 +11,51 @@
 uint8_t seq1[5] = {1, 2, 3, 7};
 uint8_t tab[6];
 
-Door::Door()
+Door::Door() : StateMachine(ST_MAX_STATES)
 {
-	state = transoptors.Read();
-	position = 0;
+	ST_Init();
+	status = 0;
 }
 
-void Door::UpdatePosition()
+void Door::SetStatus(uint16_t st)
+{
+	status = st;
+}
+
+void Door::ST_Init(DoorData* pdata)
+{
+	if(transoptors.Read() == 0)		// closed
+	{
+		SetStatus(DOOR_STATUS_CLOSED);
+		InternalEvent(ST_CLOSED, NULL);
+	}
+	else
+	{
+		SetStatus(DOOR_STATUS_OPENED | F06_CLOSE_THE_DOOR);
+		InternalEvent(ST_OPENED, NULL);
+	}
+}
+
+void Door::ST_Closed(DoorData* pdata)
+{
+	SetStatus(DOOR_STATUS_CLOSED);
+}
+
+void Door::ST_Opened(DoorData* pdata)
+{
+
+}
+
+void Door::EV_Close(DoorData* pdata)
+{
+	BEGIN_TRANSITION_MAP								// current state
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_INIT
+		TRANSITION_MAP_ENTRY(ST_NOT_ALLOWED)			// ST_CLOSED
+		TRANSITION_MAP_ENTRY(ST_CLOSED)					// ST_OPENED
+	END_TRANSITION_MAP(pdata)
+}
+
+void Door::UpdateStatus()
 {
 /*	static uint8_t i;
 	uint8_t state_tmp = transoptors.Read();
@@ -36,10 +74,13 @@ void Door::UpdatePosition()
 		position++;
 	}
 */
-	position = transoptors.Read();
+	if(transoptors.Read() == 0)
+	{
+		EV_Close(NULL);
+	}
 }
 
-uint8_t Door::GetPosition()
+uint16_t Door::GetStatus()
 {
-	return position;
+	return status;
 }

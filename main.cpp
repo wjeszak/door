@@ -26,6 +26,6 @@ int main()
 	sei();
 	while(1)
 	{
-		door.UpdatePosition();
+		door.UpdateStatus();
 	}
 }
