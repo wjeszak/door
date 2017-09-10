@@ -11,8 +11,6 @@
 #include <avr/io.h>
 #include <inttypes.h>
 
-#include "comm_prot.h"
-
 #define TRANSOPTORS_DDR 					DDRD
 #define TRANSOPTORS_PORT 					PORTD
 #define TRANSOPTORS_PIN 					PIND
@@ -32,11 +30,8 @@ public:
 	Transoptors();
 	bool Check();
 	uint8_t Read();
-	uint16_t GetDoorState();
 private:
 	uint8_t val;
-	uint8_t val_tmp;
-	uint16_t state;
 };
 
 extern Transoptors transoptors;
