@@ -17,7 +17,8 @@
 #define DOOR_STATE_OPENED_1STOP				0x01
 
 #define F03_OPTICAL_SWITCHES_FAULT 			0xF0
-#define F05_ELECTROMAGNET_FAULT 			0xF1
+// reply in command 0x01
+#define F05_ELECTROMAGNET_FAULT 			0x01
 
 class DoorData : public EventData
 {

@@ -30,12 +30,12 @@ void Comm_prot::Parse(uint8_t* frame)
 		break;
 		case 0x02:
 			if(transoptors.Check())
-				comm.Prepare(1);
+				comm.Prepare(door.GetStatus());
 			else
-				comm.Prepare(0);
+				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
 		break;
 		case 0x03:
-			comm.Prepare(door.GetStatus());
+
 		break;
 
 		}
