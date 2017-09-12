@@ -24,9 +24,11 @@ Comm_prot comm;
 
 int main()
 {
+	PCICR |= (1 << PCIE2);
+	PCMSK2 |= (1 << PCINT23) | (1 << PCINT19) | (1 << PCINT18);
 	sei();
 	while(1)
 	{
-		door.Poll();
+	//	door.Poll();
 	}
 }

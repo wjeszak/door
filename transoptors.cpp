@@ -5,13 +5,16 @@
  *      Author: tomek
  */
 
+#include <avr/interrupt.h>
 #include "transoptors.h"
+#include "door.h"
 
 // niezasloniety -> lo
 // zasloniety    -> hi
 
 Transoptors::Transoptors()
 {
+
 	val = 0;
 }
 
@@ -29,5 +32,12 @@ uint8_t Transoptors::Read()
 	if(TRANSOPTORS_PIN & (1 << TRANSOPTOR_1)) val |= (1 << 0);
 	if(TRANSOPTORS_PIN & (1 << TRANSOPTOR_2)) val |= (1 << 1);
 	if(TRANSOPTORS_PIN & (1 << TRANSOPTOR_3)) val |= (1 << 2);
+	door_data.val = val;
+	door.EV_ChangeVal(&door_data);
 	return val;
+}
+
+ISR(PCINT2_vect)
+{
+	transoptors.Read();
 }

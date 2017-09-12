@@ -9,10 +9,11 @@
 #include "transoptors.h"
 
 uint8_t seq1[4] = {1, 2, 3, 7};
-uint8_t tab[6];
+uint8_t seqn[6] = {5, 4, 6, 2, 3, 1};
 
 Door::Door() : StateMachine(ST_MAX_STATES)
 {
+	position = 0;
 	ST_Init();
 }
 
@@ -45,19 +46,34 @@ void Door::ST_Closed(DoorData* pdata)
 
 void Door::ST_Opened(DoorData* pdata)
 {
-	static uint8_t seq[5], i;
-	SetStatus(DOOR_STATE_OPENED);
+	static uint8_t seq[6], i;
+//	SetStatus(DOOR_STATE_OPENED);
 	if(zero_achieved)
 	{
 		seq[i++] = pdata->val;
-		if(i == 4)
+		if((i == 4) && (position == 0))
+		//if(i == 4)
 		{
 			for(i = 0; i < 4; i++)
 			{
 				if(seq[i] != seq1[i]) return;
 			}
-			SetStatus(DOOR_STATE_OPENED_1STOP);
+			i = 0;
+			position++;
+			SetStatus(position);
+			//SetStatus(DOOR_STATE_OPENED_1STOP);
 		}
+		if(i == 6)
+		{
+			for(i = 0; i < 6; i++)
+			{
+				if(seq[i] != seqn[i]) return;
+			}
+			i = 0;
+			position++;
+			SetStatus(position);
+		}
+
 	}
 }
 
@@ -67,26 +83,6 @@ void Door::EV_ChangeVal(DoorData* pdata)
 		InternalEvent(ST_CLOSED, pdata);
 	else
 		InternalEvent(ST_OPENED, pdata);
-}
-
-void Door::Poll()
-{
-	uint8_t trans_val = transoptors.Read();
-
-	if(trans_val != door_data.val)
-	{
-		door_data.val = trans_val;
-		EV_ChangeVal(&door_data);
-	}
-//	if(i == 4)
-//	{
-//		for(uint8_t j = 0; j < 4; j++)
-//		{
-//			if(tab[j] != seq1[j]) return;
-//		}
-//		i = 0;
-//		position++;
-//	}
 }
 
 uint8_t Door::GetStatus()

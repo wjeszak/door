@@ -33,7 +33,6 @@ public:
 	// Events
 	void EV_ChangeVal(DoorData* pdata);
 	void SetStatus(uint8_t st);
-	void Poll();
 	uint8_t GetStatus();
 private:
 	// States functions
@@ -47,7 +46,7 @@ private:
 		STATE_MAP_ENTRY(&Door::ST_Opened)
 	END_STATE_MAP
 
-	uint8_t status;
+	uint8_t status, position;
 	bool zero_achieved;
 };
 
