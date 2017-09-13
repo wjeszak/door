@@ -39,39 +39,22 @@ void Door::ST_Init(DoorData* pdata)
 
 void Door::ST_Closed(DoorData* pdata)
 {
+	position = 0;
 	zero_achieved = true;
 	SetStatus(DOOR_STATE_CLOSED);
 }
 
 void Door::ST_Opened(DoorData* pdata)
 {
-	static uint8_t seq[6], i;
+	static uint8_t i;
 	SetStatus(position);
 	if(zero_achieved)
 	{
-		seq[i++] = pdata->val;
-		if((i == 4) && (position == 0))
-		{
-			for(i = 0; i < 4; i++)
-			{
-				if(seq[i] != seq1[i]) return;
-			}
-			i = 0;
-			position++;
-			SetStatus(position);
-			//SetStatus(DOOR_STATE_OPENED_1STOP);
-		}
-		if(i == 6)
-		{
-			for(i = 0; i < 6; i++)
-			{
-				if(seq[i] != seqn[i]) return;
-			}
-			i = 0;
-			position++;
-			SetStatus(position);
-		}
+		if(pdata->val == seq1[i]) i++;
+		if(i == 4) { i = 0; SetStatus(++position); }
 
+		if(pdata->val == seqn[i]) i++;
+		if(i == 6) { i = 0; SetStatus(++position); }
 	}
 }
 
