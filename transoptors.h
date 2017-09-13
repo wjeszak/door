@@ -30,8 +30,6 @@ public:
 	Transoptors();
 	bool Check();
 	void Read();
-private:
-	//uint8_t val;
 };
 
 extern Transoptors transoptors;

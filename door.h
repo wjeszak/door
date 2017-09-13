@@ -39,6 +39,7 @@ private:
 	void ST_Init(DoorData* pdata = NULL);
 	void ST_Closed(DoorData* pdata);
 	void ST_Opened(DoorData* pdata);
+	uint8_t CmpArrays(uint8_t* tab1, uint8_t* tab2, uint8_t len);
 	enum States {ST_INIT = 0, ST_CLOSED, ST_OPENED, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Door::ST_Init)
@@ -46,7 +47,7 @@ private:
 		STATE_MAP_ENTRY(&Door::ST_Opened)
 	END_STATE_MAP
 
-	uint8_t status, position;
+	uint8_t status, sub_position, position;
 	bool zero_achieved;
 };
 
