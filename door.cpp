@@ -50,24 +50,24 @@ void Door::ST_Closed(DoorData* pdata)
 
 void Door::ST_Opened(DoorData* pdata)
 {
-	static uint8_t i, seq[6];
-
 	SetStatus(position);
 	if(zero_achieved)
 	{
-		if(pdata->val == seq1[sub_position + 1]) sub_position++;
-		if((pdata->val == seq1[sub_position - 1]) && (sub_position >= 1)) sub_position--;
-		if(sub_position == 4)
+		if(position == 1)
 		{
-			SetStatus(++position);
-			//if(CmpArrays(seq, seq1, 4)) { i = 0; SetStatus(++position); }
-			//if(CmpArrays(seq, seq1_back, i)) { i = 0; SetStatus(--position); }
+			if(pdata->val == seq1[sub_position + 1]) sub_position++;
+			if((pdata->val == seq1[sub_position - 1]) && (sub_position >= 1)) sub_position--;
+			if(sub_position == 4) { sub_position = 0; SetStatus(++position); }	// 7
 		}
-		//if(i == 6)
-		//{
-		//	if(CmpArrays(seq, seqn, 6)) { i = 0; SetStatus(++position); }
-		//	if(CmpArrays(seq, seqn_back, 6)) { i = 0; SetStatus(--position); }
-		//}
+		else
+		{
+			if(pdata->val == seq1[4]) { position = 1; sub_position = 3; return; }
+			if(pdata->val == seqn[sub_position]) sub_position++;		// ok
+			//if((pdata->val == seqn[sub_position - 1]) && (sub_position >= 1)) sub_position--;
+			//if((pdata->val == seqn[5]) && (sub_position == 0)) { sub_position = 5; SetStatus(--position); return; }
+			if(sub_position == 6) { sub_position = 0; SetStatus(++position); } 	// 1  ok
+
+		}
 	}
 }
 
