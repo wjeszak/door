@@ -29,9 +29,9 @@ class Transoptors
 public:
 	Transoptors();
 	bool Check();
-	uint8_t Read();
+	void Read();
 private:
-	uint8_t val;
+	//uint8_t val;
 };
 
 extern Transoptors transoptors;
