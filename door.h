@@ -15,7 +15,7 @@
 #define DOOR_STATE_DOOR_NOT_YET_OPENED		0x80
 #define DOOR_STATE_OPENED 					0x40
 #define DOOR_STATE_OPENED_1STOP				0x01
-
+// reply in command 0x02
 #define F03_OPTICAL_SWITCHES_FAULT 			0xF0
 // reply in command 0x01
 #define F05_ELECTROMAGNET_FAULT 			0x01
