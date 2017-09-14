@@ -34,8 +34,10 @@ void Comm_prot::Parse(uint8_t* frame)
 			else
 				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
 		break;
+		default:
+			if(frame[1] & (1 << 7)) {door.required_position = frame[1] - 0x80; ELECTROMAGNET_ON;}
+		break;
 		}
-		if(frame[1] & (1 << 7)) {door.required_position = frame[1] - 0x80; ELECTROMAGNET_ON;}
 	}
 }
 
