@@ -34,12 +34,13 @@ public:
 	void EV_ChangeVal(DoorData* pdata);
 	void SetStatus(uint8_t st);
 	uint8_t GetStatus();
+	uint8_t required_position;
 private:
 	// States functions
 	void ST_Init(DoorData* pdata = NULL);
 	void ST_Closed(DoorData* pdata);
 	void ST_Opened(DoorData* pdata);
-	uint8_t CmpArrays(uint8_t* tab1, uint8_t* tab2, uint8_t len);
+//	uint8_t CmpArrays(uint8_t* tab1, uint8_t* tab2, uint8_t len);
 	enum States {ST_INIT = 0, ST_CLOSED, ST_OPENED, ST_MAX_STATES};
 	BEGIN_STATE_MAP
 		STATE_MAP_ENTRY(&Door::ST_Init)

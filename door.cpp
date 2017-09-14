@@ -7,6 +7,7 @@
 
 #include "door.h"
 #include "transoptors.h"
+#include "electromagnet.h"
 
 uint8_t seq1[5] = {0, 1, 2, 3, 7};
 uint8_t seq1_back[4] = {7, 3, 2, 1};
@@ -51,6 +52,7 @@ void Door::ST_Closed(DoorData* pdata)
 void Door::ST_Opened(DoorData* pdata)
 {
 	SetStatus(position);
+	if(position == required_position) ELECTROMAGNET_OFF;
 	if(zero_achieved)
 	{
 		if(position == 1)
@@ -84,6 +86,7 @@ uint8_t Door::GetStatus()
 	return status;
 }
 
+/*
 uint8_t Door::CmpArrays(uint8_t* tab1, uint8_t* tab2, uint8_t len)
 {
 	for(uint8_t i = 0; i < len; i++)
@@ -92,3 +95,4 @@ uint8_t Door::CmpArrays(uint8_t* tab1, uint8_t* tab2, uint8_t len)
 	}
 	return 1;
 }
+*/
