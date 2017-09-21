@@ -20,6 +20,10 @@ Door::Door() : StateMachine(ST_MAX_STATES)
 	zero_achieved = false;
 	sub_position = 0;
 	position = 1;
+	for(uint8_t i = 0; i < 50; i++)
+	{
+		seq_tab[i] = 0;
+	}
 	ST_Init();
 }
 
@@ -30,7 +34,7 @@ void Door::SetStatus(uint8_t st)
 
 void Door::ST_Init(DoorData* pdata)
 {
-	transoptors.Read();
+/*	transoptors.Read();
 	if(door_data.val == 0)
 	{
 		InternalEvent(ST_CLOSED, NULL);
@@ -40,18 +44,20 @@ void Door::ST_Init(DoorData* pdata)
 		SetStatus(DOOR_STATE_OPENED);
 		InternalEvent(ST_OPENED, NULL);
 	}
+*/
 }
 
 void Door::ST_Closed(DoorData* pdata)
 {
-	position = 1;
+/*	position = 1;
 	zero_achieved = true;
 	SetStatus(DOOR_STATE_CLOSED);
+*/
 }
 
 void Door::ST_Opened(DoorData* pdata)
 {
-	SetStatus(position);
+/*	SetStatus(position);
 	if(position == required_position) ELECTROMAGNET_OFF;
 	if(zero_achieved)
 	{
@@ -71,14 +77,19 @@ void Door::ST_Opened(DoorData* pdata)
 
 		}
 	}
+*/
 }
 
 void Door::EV_ChangeVal(DoorData* pdata)
 {
-	if(pdata->val == 0)
+	static uint8_t i;
+	seq_tab[i++] = pdata->val;
+	if(i == 50) i = 0;
+/*	if(pdata->val == 0)
 		InternalEvent(ST_CLOSED, pdata);
 	else
 		InternalEvent(ST_OPENED, pdata);
+*/
 }
 
 uint8_t Door::GetStatus()

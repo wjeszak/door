@@ -35,6 +35,7 @@ public:
 	void SetStatus(uint8_t st);
 	uint8_t GetStatus();
 	uint8_t required_position;
+	uint8_t seq_tab[50];			// temporary
 private:
 	// States functions
 	void ST_Init(DoorData* pdata = NULL);

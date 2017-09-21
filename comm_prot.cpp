@@ -14,7 +14,7 @@
 
 Comm_prot::Comm_prot()
 {
-	address = 6;
+	address = 1;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -29,10 +29,11 @@ void Comm_prot::Parse(uint8_t* frame)
 			timer.Assign(TIMER_TEST_ELECTROMAGNET, 4, ElectromagnetTest);
 		break;
 		case COMM_CHECK_TRANSOPTORS_GET_STATUS:
-			if(transoptors.Check())
-				comm.Prepare(door.GetStatus());
-			else
-				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
+			//if(transoptors.Check())
+				//comm.Prepare(door.GetStatus());
+				comm.Prepare(0);
+			//else
+				//comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
 		break;
 		default:
 			if(frame[1] & (1 << 7)) {door.required_position = frame[1] - 0x80; ELECTROMAGNET_ON;}
@@ -43,11 +44,21 @@ void Comm_prot::Parse(uint8_t* frame)
 
 void Comm_prot::Prepare(uint8_t status)
 {
-	usart_data.frame[0] = address;
+/*	usart_data.frame[0] = address;
 	usart_data.frame[1] = status;
 	usart_data.frame[2] = Crc8(usart_data.frame, 2);
 	usart_data.frame[3] = 0x0A;
 	usart_data.len = FRAME_LENGTH_RESPONSE;
+	usart.SendFrame(&usart_data);
+*/
+	usart_data.frame[0] = address;
+	for(uint8_t i = 0; i < 50; i++)
+	{
+		usart_data.frame[i + 1] = door.seq_tab[i];
+	}
+	usart_data.frame[51] = Crc8(usart_data.frame, 51);
+	usart_data.frame[52] = 0x0A;
+	usart_data.len = 53;
 	usart.SendFrame(&usart_data);
 }
 
