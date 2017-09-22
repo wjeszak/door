@@ -45,16 +45,17 @@ void Door::EV_ChangeVal(DoorData* pdata)
 
 	if(zero_achieved)
 	{
-		//if(pos == 0)
-		//{
+		if(pos == 0)
+		{
 			// Drzwi musza byc w pozycji 1 a nastepnie przez sekunde w 0 zeby uznac je za zamkniete.
 			// Mala szansa ze ktos zatrzyma drzwi w pozycji "drugiego" zera.
 			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 1000, DoorClosed);
+
 			if(val == sequence_1[sub_pos])
 			{
 				SetStatus(DOOR_STATE_OPENED);
 				sub_pos++;
-				if(sub_pos == 4) SetStatus(++pos);
+				if(sub_pos == 4) { sub_pos = 0; SetStatus(++pos); }
 				return;
 			}
 
@@ -63,11 +64,17 @@ void Door::EV_ChangeVal(DoorData* pdata)
 				sub_pos--;
 				return;
 			}
-		//}
-		//if(pos > 0)
-		//{
-
-		//}
+		}
+		if(pos > 0)
+		{
+			if(val == sequence_n[sub_pos])
+			{
+				//SetStatus(DOOR_STATE_OPENED);
+				sub_pos++;
+				if(sub_pos == 5) { sub_pos = 0; SetStatus(++pos); }
+				return;
+			}
+		}
 	}
 }
 
