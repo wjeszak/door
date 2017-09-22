@@ -35,6 +35,7 @@ public:
 	void SetStatus(uint8_t st);
 	uint8_t GetStatus();
 	uint8_t required_position;
+	uint8_t sub_pos;
 private:
 	// States functions
 	void ST_Init(DoorData* pdata = NULL);
@@ -48,7 +49,7 @@ private:
 		STATE_MAP_ENTRY(&Door::ST_Opened)
 	END_STATE_MAP
 
-	uint8_t status, sub_pos, pos, val, last_val;
+	uint8_t status, pos, val, last_val;
 	bool zero_achieved;
 };
 

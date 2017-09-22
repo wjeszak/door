@@ -10,7 +10,7 @@
 #include "electromagnet.h"
 #include "timer.h"
 
-uint8_t sequence_1[4] = {1, 2, 3, 7};		// rzecz. 0, 1, 0, 2, 3, 7
+uint8_t sequence_1[5] = {1, 2, 3, 7};		// rzecz. 0, 1, 0, 2, 3, 7
 uint8_t sequence_n[6] = {5, 4, 6, 2, 3, 1};
 
 Door::Door()
@@ -45,9 +45,11 @@ void Door::EV_ChangeVal(DoorData* pdata)
 
 	if(zero_achieved)
 	{
-		if(pos == 0)
-		{
-			//if((last_val == 2) && (val == 0)) return;
+		//if(pos == 0)
+		//{
+			// Drzwi musza byc w pozycji 1 a nastepnie przez sekunde w 0 zeby uznac je za zamkniete.
+			// Mala szansa ze ktos zatrzyma drzwi w pozycji "drugiego" zera.
+			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 1000, DoorClosed);
 			if(val == sequence_1[sub_pos])
 			{
 				SetStatus(DOOR_STATE_OPENED);
@@ -55,21 +57,17 @@ void Door::EV_ChangeVal(DoorData* pdata)
 				if(sub_pos == 4) SetStatus(++pos);
 				return;
 			}
-			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 1000, DoorClosed);
 
-			/*if((val == sequence_1[sub_pos - 1]) && (sub_pos >= 1))
+			if((val == sequence_1[sub_pos - 2]) && (sub_pos > 1))
 			{
 				sub_pos--;
-				if(sub_pos == 0) SetStatus(DOOR_STATE_CLOSED);
 				return;
 			}
-			else if(val == 0) SetStatus(DOOR_STATE_CLOSED);
-*/
+		//}
+		//if(pos > 0)
+		//{
 
-
-
-		}
-
+		//}
 	}
 }
 
