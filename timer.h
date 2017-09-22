@@ -11,9 +11,10 @@
 #include <avr/io.h>
 #include <stdio.h>
 
-#define NUMBER_OF_TIMERS 				8
+#define NUMBER_OF_TIMERS 				2
 
 #define TIMER_TEST_ELECTROMAGNET		0
+#define TIMER_DOOR_CLOSED 				1
 
 enum T0Prescallers
 {
@@ -46,6 +47,7 @@ private:
 
 extern Timer timer;
 
-void ElectromagnetTest();
+extern void ElectromagnetTest();
+extern void DoorClosed();
 
 #endif /* TIMER_H_ */

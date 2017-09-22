@@ -33,18 +33,19 @@ bool Transoptors::Check()
 		return true;
 }
 
-void Transoptors::Read()
+uint8_t Transoptors::Read()
 {
-	door_data.val = 0;
+	uint8_t v = 0;
+	//door_data.val = 0;
 	PORTD |= (1 << 4) | (1 << 5);
 	PORTC |= (1 << 1);
-	if(TRANSOPTORS_PIN & (1 << TRANSOPTOR_1)) { PORTD &= ~(1 << 4); door_data.val |= (1 << 0); }
-	if(TRANSOPTORS_PIN & (1 << TRANSOPTOR_2)) { PORTC &= ~(1 << 1); door_data.val |= (1 << 1); }
-	if(TRANSOPTORS_PIN & (1 << TRANSOPTOR_3)) { PORTD &= ~(1 << 5); door_data.val |= (1 << 2); }
+	if(TRANSOPTORS_PIN & (1 << TRANSOPTOR_1)) { PORTD &= ~(1 << 4); v |= (1 << 0); }
+	if(TRANSOPTORS_PIN & (1 << TRANSOPTOR_2)) { PORTC &= ~(1 << 1); v |= (1 << 1); }
+	if(TRANSOPTORS_PIN & (1 << TRANSOPTOR_3)) { PORTD &= ~(1 << 5); v |= (1 << 2); }
+	return v;
 }
 
 ISR(PCINT2_vect)
 {
-	transoptors.Read();
-	door.EV_ChangeVal(&door_data);
+	door.EV_ChangeVal(NULL);
 }

@@ -26,7 +26,7 @@ public:
 	uint8_t val;
 };
 
-class Door : public StateMachine
+class Door
 {
 public:
 	Door();
@@ -35,7 +35,6 @@ public:
 	void SetStatus(uint8_t st);
 	uint8_t GetStatus();
 	uint8_t required_position;
-	uint8_t seq_tab[50];			// temporary
 private:
 	// States functions
 	void ST_Init(DoorData* pdata = NULL);
@@ -49,7 +48,7 @@ private:
 		STATE_MAP_ENTRY(&Door::ST_Opened)
 	END_STATE_MAP
 
-	uint8_t status, sub_position, position;
+	uint8_t status, sub_pos, pos, val, last_val;
 	bool zero_achieved;
 };
 

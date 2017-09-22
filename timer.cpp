@@ -79,3 +79,9 @@ void ElectromagnetTest()
 	ELECTROMAGNET_OFF;
 	timer.Disable(TIMER_TEST_ELECTROMAGNET);
 }
+
+void DoorClosed()
+{
+	timer.Disable(TIMER_DOOR_CLOSED);
+	door.SetStatus(DOOR_STATE_CLOSED);
+}

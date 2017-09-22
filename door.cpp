@@ -8,88 +8,74 @@
 #include "door.h"
 #include "transoptors.h"
 #include "electromagnet.h"
+#include "timer.h"
 
-uint8_t seq1[5] = {0, 1, 2, 3, 7};
-uint8_t seq1_back[4] = {7, 3, 2, 1};
+uint8_t sequence_1[4] = {1, 2, 3, 7};		// rzecz. 0, 1, 0, 2, 3, 7
+uint8_t sequence_n[6] = {5, 4, 6, 2, 3, 1};
 
-uint8_t seqn[6] = {5, 4, 6, 2, 3, 1};
-uint8_t seqn_back[6] = {1, 3, 2, 6, 4, 5};
-
-Door::Door() : StateMachine(ST_MAX_STATES)
+Door::Door()
 {
 	zero_achieved = false;
-	sub_position = 0;
-	position = 1;
-	for(uint8_t i = 0; i < 50; i++)
+	sub_pos = 0;
+	pos = 0;
+	last_val = 0;
+	val = transoptors.Read();
+	if(val == 0)
 	{
-		seq_tab[i] = 0;
+		zero_achieved = true;
+		SetStatus(DOOR_STATE_CLOSED);
 	}
-	ST_Init();
+	else
+	{
+		SetStatus(DOOR_STATE_OPENED);
+	}
+}
+
+void Door::EV_ChangeVal(DoorData* pdata)
+{
+	timer.Disable(TIMER_DOOR_CLOSED);
+	last_val = val;
+	val = transoptors.Read();
+	if(!zero_achieved && (val == 0) && (last_val == 1))
+	{
+		zero_achieved = true;
+		SetStatus(DOOR_STATE_CLOSED);
+		return;
+	}
+
+	if(zero_achieved)
+	{
+		if(pos == 0)
+		{
+			//if((last_val == 2) && (val == 0)) return;
+			if(val == sequence_1[sub_pos])
+			{
+				SetStatus(DOOR_STATE_OPENED);
+				sub_pos++;
+				if(sub_pos == 4) SetStatus(++pos);
+				return;
+			}
+			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 1000, DoorClosed);
+
+			/*if((val == sequence_1[sub_pos - 1]) && (sub_pos >= 1))
+			{
+				sub_pos--;
+				if(sub_pos == 0) SetStatus(DOOR_STATE_CLOSED);
+				return;
+			}
+			else if(val == 0) SetStatus(DOOR_STATE_CLOSED);
+*/
+
+
+
+		}
+
+	}
 }
 
 void Door::SetStatus(uint8_t st)
 {
 	status = st;
-}
-
-void Door::ST_Init(DoorData* pdata)
-{
-/*	transoptors.Read();
-	if(door_data.val == 0)
-	{
-		InternalEvent(ST_CLOSED, NULL);
-	}
-	else
-	{
-		SetStatus(DOOR_STATE_OPENED);
-		InternalEvent(ST_OPENED, NULL);
-	}
-*/
-}
-
-void Door::ST_Closed(DoorData* pdata)
-{
-/*	position = 1;
-	zero_achieved = true;
-	SetStatus(DOOR_STATE_CLOSED);
-*/
-}
-
-void Door::ST_Opened(DoorData* pdata)
-{
-/*	SetStatus(position);
-	if(position == required_position) ELECTROMAGNET_OFF;
-	if(zero_achieved)
-	{
-		if(position == 1)
-		{
-			if(pdata->val == seq1[sub_position + 1]) sub_position++;
-			if((pdata->val == seq1[sub_position - 1]) && (sub_position >= 1)) sub_position--;
-			if(sub_position == 4) { sub_position = 0; SetStatus(++position); }	// 7
-		}
-		else
-		{
-			if(pdata->val == seq1[4]) { position = 1; sub_position = 3; return; }
-			if(pdata->val == seqn[sub_position]) sub_position++;		// ok
-			//if((pdata->val == seqn[sub_position - 1]) && (sub_position >= 1)) sub_position--;
-			//if((pdata->val == seqn[5]) && (sub_position == 0)) { sub_position = 5; SetStatus(--position); return; }
-			if(sub_position == 6) { sub_position = 0; SetStatus(++position); } 	// 1  ok
-
-		}
-	}
-*/
-}
-
-void Door::EV_ChangeVal(DoorData* pdata)
-{
-	static uint8_t i;
-	seq_tab[i++] = pdata->val;
-	if(i == 50) i = 0;
-/*	if(pdata->val == 0)
-		InternalEvent(ST_CLOSED, pdata);
-	else
-		InternalEvent(ST_OPENED, pdata);
-*/
 }
 
 uint8_t Door::GetStatus()
