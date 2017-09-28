@@ -51,16 +51,16 @@ void Door::EV_ChangeVal(DoorData* pdata)
 			// Drzwi musza byc w pozycji 1 a nastepnie przez sekunde w 0 zeby uznac je za zamkniete.
 			// Mala szansa ze ktos zatrzyma drzwi w pozycji "drugiego" zera.
 			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 1000, DoorClosed);
-
-			if((sub_pos == 4) && (val == sequence_n[0])) { sub_pos = 0; SetStatus(++pos);}
-
+			// next position
+			if((sub_pos == 4) && (val == sequence_n[0])) { sub_pos = 0; SetStatus(DOOR_STATE_OPENED + ++pos); }
+			// forward
 			if((val == sequence_1[sub_pos]) && (sub_pos <= 3))
 			{
 				SetStatus(DOOR_STATE_OPENED);
 				sub_pos++;
 				return;
 			}
-
+			// backward
 			if((val == sequence_1[sub_pos - 2]) && (sub_pos >= 2))
 			{
 				sub_pos--;
@@ -69,32 +69,24 @@ void Door::EV_ChangeVal(DoorData* pdata)
 		}
 		if(pos > 0)
 		{
-			if((sub_pos == 6) && (val == sequence_n[0])) { sub_pos = 0;	SetStatus(++pos);}
-
+			// next position
+			if((sub_pos == 6) && (val == sequence_n[0])) { sub_pos = 0;	SetStatus(DOOR_STATE_OPENED + ++pos); }
+			// forward
 			if((val == sequence_n[sub_pos]) && (sub_pos <= 5))
 			{
 				sub_pos++;
 				return;
 			}
-
+			// backward
 			if((val == sequence_n[sub_pos - 2]) && (sub_pos >= 2))
 			{
 				sub_pos--;
 				return;
 			}
-
-			if((val == 1) && (sub_pos == 1)) { sub_pos = 6; SetStatus(--pos); }
-			if((val == 7) && (sub_pos == 1)) { sub_pos = 4; SetStatus(--pos); }
-
-
-		/*	if((val == sequence_n[sub_pos - 1]) && (sub_pos > 1))
-			{
-				sub_pos--;
-				return;
-			}
-
-			if((val == sequence_n[5]) && (sub_pos == 0)) { sub_pos = 6; SetStatus(--pos); }
-		*/
+			// n -> n - 1
+			if((val == 1) && (sub_pos == 1)) { sub_pos = 6; SetStatus(DOOR_STATE_OPENED + --pos); }
+			// 1 -> 0
+			if((val == 7) && (sub_pos == 1)) { sub_pos = 4; SetStatus(DOOR_STATE_OPENED + --pos); }
 		}
 	}
 }
