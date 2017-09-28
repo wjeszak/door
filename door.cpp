@@ -10,11 +10,12 @@
 #include "electromagnet.h"
 #include "timer.h"
 
-uint8_t sequence_1[5] = {1, 2, 3, 7};		// rzecz. 0, 1, 0, 2, 3, 7
+uint8_t sequence_1[4] = {1, 2, 3, 7};		// rzecz. 0, 1, 0, 2, 3, 7
 uint8_t sequence_n[6] = {5, 4, 6, 2, 3, 1};
 
 Door::Door()
 {
+	last_sub_pos = false;
 	zero_achieved = false;
 	sub_pos = 0;
 	pos = 0;
@@ -36,7 +37,7 @@ void Door::EV_ChangeVal(DoorData* pdata)
 	timer.Disable(TIMER_DOOR_CLOSED);
 	last_val = val;
 	val = transoptors.Read();
-	if(!zero_achieved && (val == 0) && (last_val == 1))
+	if(!zero_achieved && (last_val == 1) && (val == 0))
 	{
 		zero_achieved = true;
 		SetStatus(DOOR_STATE_CLOSED);
@@ -51,15 +52,16 @@ void Door::EV_ChangeVal(DoorData* pdata)
 			// Mala szansa ze ktos zatrzyma drzwi w pozycji "drugiego" zera.
 			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 1000, DoorClosed);
 
-			if(val == sequence_1[sub_pos])
+			if((sub_pos == 4) && (val == sequence_n[0])) { sub_pos = 0; SetStatus(++pos);}
+
+			if((val == sequence_1[sub_pos]) && (sub_pos <= 3))
 			{
 				SetStatus(DOOR_STATE_OPENED);
 				sub_pos++;
-				if(sub_pos == 4) { sub_pos = 0; SetStatus(++pos); }
 				return;
 			}
 
-			if((val == sequence_1[sub_pos - 2]) && (sub_pos > 1))
+			if((val == sequence_1[sub_pos - 2]) && (sub_pos >= 2))
 			{
 				sub_pos--;
 				return;
@@ -67,13 +69,24 @@ void Door::EV_ChangeVal(DoorData* pdata)
 		}
 		if(pos > 0)
 		{
-			if(val == sequence_n[sub_pos])
+			if((sub_pos == 6) && (val == sequence_n[0])) { sub_pos = 0;	SetStatus(++pos);}
+
+			if((val == sequence_n[sub_pos]) && (sub_pos <= 5))
 			{
-				//SetStatus(DOOR_STATE_OPENED);
 				sub_pos++;
-				if(sub_pos == 5) { sub_pos = 0; SetStatus(++pos); }
 				return;
 			}
+
+
+
+		/*	if((val == sequence_n[sub_pos - 1]) && (sub_pos > 1))
+			{
+				sub_pos--;
+				return;
+			}
+
+			if((val == sequence_n[5]) && (sub_pos == 0)) { sub_pos = 6; SetStatus(--pos); }
+		*/
 		}
 	}
 }
@@ -83,10 +96,21 @@ void Door::SetStatus(uint8_t st)
 	status = st;
 }
 
+uint8_t Door::GetTransVal()
+{
+	return val;
+}
+
+uint8_t Door::GetSubpos()
+{
+	return sub_pos;
+}
+
 uint8_t Door::GetStatus()
 {
 	return status;
 }
+
 
 /*
 uint8_t Door::CmpArrays(uint8_t* tab1, uint8_t* tab2, uint8_t len)

@@ -30,9 +30,9 @@ void Comm_prot::Parse(uint8_t* frame)
 		break;
 		case COMM_CHECK_TRANSOPTORS_GET_STATUS:
 			if(transoptors.Check())
-				comm.Prepare(door.GetStatus());
+				comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());
 			else
-				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
+				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT, 0,0);
 		break;
 		default:
 			if(frame[1] & (1 << 7)) {door.required_position = frame[1] - 0x80; ELECTROMAGNET_ON;}
@@ -41,13 +41,15 @@ void Comm_prot::Parse(uint8_t* frame)
 	}
 }
 
-void Comm_prot::Prepare(uint8_t status)
+void Comm_prot::Prepare(uint8_t trans_val, uint8_t sub_pos, uint8_t status)
 {
 	usart_data.frame[0] = address;
-	usart_data.frame[1] = status;
-	usart_data.frame[2] = Crc8(usart_data.frame, 2);
-	usart_data.frame[3] = 0x0A;
-	usart_data.len = FRAME_LENGTH_RESPONSE;
+	usart_data.frame[1] = trans_val;
+	usart_data.frame[2] = sub_pos;
+	usart_data.frame[3] = status;
+	usart_data.frame[4] = Crc8(usart_data.frame, 3);
+	usart_data.frame[5] = 0x0A;
+	usart_data.len = 6;
 	usart.SendFrame(&usart_data);
 }
 

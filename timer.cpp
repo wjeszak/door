@@ -73,9 +73,9 @@ ISR(TIMER0_COMPA_vect)
 void ElectromagnetTest()
 {
 	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN))
-		comm.Prepare(F05_ELECTROMAGNET_FAULT);
+		comm.Prepare(F05_ELECTROMAGNET_FAULT, 0,0);
 	else
-		comm.Prepare(0x00);
+		comm.Prepare(0x00, 0,0);
 	ELECTROMAGNET_OFF;
 	timer.Disable(TIMER_TEST_ELECTROMAGNET);
 }

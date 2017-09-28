@@ -33,6 +33,9 @@ public:
 	// Events
 	void EV_ChangeVal(DoorData* pdata);
 	void SetStatus(uint8_t st);
+
+	uint8_t GetTransVal();
+	uint8_t GetSubpos();
 	uint8_t GetStatus();
 	uint8_t required_position;
 	uint8_t sub_pos;
@@ -48,9 +51,8 @@ private:
 		STATE_MAP_ENTRY(&Door::ST_Closed)
 		STATE_MAP_ENTRY(&Door::ST_Opened)
 	END_STATE_MAP
-
 	uint8_t status, pos, val, last_val;
-	bool zero_achieved;
+	bool zero_achieved, last_sub_pos;
 };
 
 extern Door door;

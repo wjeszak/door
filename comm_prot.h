@@ -22,7 +22,7 @@ class Comm_prot
 public:
 	Comm_prot();
 	void Parse(uint8_t* frame);
-	void Prepare(uint8_t status);
+	void Prepare(uint8_t trans_val, uint8_t sub_pos, uint8_t status);
 private:
 	uint8_t Crc8(uint8_t* frame, uint8_t len);
 	uint8_t address;
