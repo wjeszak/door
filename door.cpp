@@ -83,8 +83,8 @@ void Door::EV_ChangeVal(DoorData* pdata)
 				return;
 			}
 
-			if((val == 1) && (sub_pos == 1)) { sub_pos = 6; SetStatus(--pos);}
-
+			if((val == 1) && (sub_pos == 1)) { sub_pos = 6; SetStatus(--pos); }
+			if((val == 7) && (sub_pos == 1)) { sub_pos = 4; SetStatus(--pos); }
 
 
 		/*	if((val == sequence_n[sub_pos - 1]) && (sub_pos > 1))
