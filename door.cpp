@@ -15,7 +15,6 @@ uint8_t sequence_n[6] = {5, 4, 6, 2, 3, 1};
 
 Door::Door()
 {
-	last_sub_pos = false;
 	zero_achieved = false;
 	sub_pos = 0;
 	pos = 0;
@@ -34,6 +33,7 @@ Door::Door()
 
 void Door::EV_ChangeVal(DoorData* pdata)
 {
+	if(pos == required_position) ELECTROMAGNET_OFF;
 	timer.Disable(TIMER_DOOR_CLOSED);
 	last_val = val;
 	val = transoptors.Read();

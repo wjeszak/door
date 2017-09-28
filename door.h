@@ -52,7 +52,7 @@ private:
 		STATE_MAP_ENTRY(&Door::ST_Opened)
 	END_STATE_MAP
 	uint8_t status, pos, val, last_val;
-	bool zero_achieved, last_sub_pos;
+	bool zero_achieved;
 };
 
 extern Door door;
