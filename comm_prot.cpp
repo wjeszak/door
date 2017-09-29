@@ -22,22 +22,38 @@ void Comm_prot::Parse(uint8_t* frame)
 	uint8_t crc = Crc8(frame, 2);
 	if((frame[0] == address) && (frame[2] == crc))
 	{
-		switch(frame[1])
+		uint8_t command = frame[1];
+		// check electromagnet
+		if(command == COMM_CHECK_ELECTROMAGNET)
 		{
-		case COMM_CHECK_ELECTROMAGNET:
 			ELECTROMAGNET_ON;
 			timer.Assign(TIMER_TEST_ELECTROMAGNET, 4, ElectromagnetTest);
-		break;
-		case COMM_CHECK_TRANSOPTORS_GET_STATUS:
+		}
+		// get state
+		if(((command & (1 << 7)) && (command & (1 << 6))))
+		{
+			if(transoptors.Check())
+			{
+				comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());
+				door.required_position = command - 0xC0;
+				ELECTROMAGNET_ON;
+				return;
+			}
+			else
+			{
+				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT, 0,0);
+				return;
+			}
+		}
+
+		if(command & (1 << 7))
+		{
 			if(transoptors.Check())
 				comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());
 			else
 				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT, 0,0);
-		break;
-		default:
-			if(frame[1] & (1 << 7)) {door.required_position = frame[1] - 0x80; ELECTROMAGNET_ON;}
-		break;
 		}
+
 	}
 }
 
