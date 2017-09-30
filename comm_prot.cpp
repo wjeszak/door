@@ -29,7 +29,7 @@ void Comm_prot::Parse(uint8_t* frame)
 			ELECTROMAGNET_ON;
 			timer.Assign(TIMER_TEST_ELECTROMAGNET, 4, ElectromagnetTest);
 		}
-		// get state
+		// set state
 		if(((command & (1 << 7)) && (command & (1 << 6))))
 		{
 			if(transoptors.Check())
@@ -45,7 +45,7 @@ void Comm_prot::Parse(uint8_t* frame)
 				return;
 			}
 		}
-
+		// get state
 		if(command & (1 << 7))
 		{
 			if(transoptors.Check())
