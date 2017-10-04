@@ -9,10 +9,11 @@
 #define ELECTROMAGNET_H_
 
 #include <avr/io.h>
-#include "state_machine.h"
+//#include "state_machine.h"
 
 #define ELECTROMAGNET_CTRL_DDR 			DDRC
 #define ELECTROMAGNET_CTRL_PORT 		PORTC
+#define ELECTROMAGNET_CTRL_PPIN 		PINC
 #define ELECTROMAGNET_CTRL_PIN 			2
 
 #define ELECTROMAGNET_TEST_COIL_DDR		DDRB
