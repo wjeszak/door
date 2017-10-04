@@ -42,7 +42,7 @@ void Comm_prot::Parse(uint8_t* frame)
 			}
 			else
 			{
-				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT, 0,0);
+				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
 				return;
 			}
 		}
@@ -53,7 +53,7 @@ void Comm_prot::Parse(uint8_t* frame)
 			//	comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());		// debug
 				comm.Prepare(door.GetStatus());
 			else
-				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT, 0,0);
+				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
 		}
 
 	}

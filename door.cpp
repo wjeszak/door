@@ -27,7 +27,7 @@ Door::Door()
 	}
 	else
 	{
-		SetStatus(DOOR_STATE_OPENED);
+		SetStatus(0);
 	}
 }
 
@@ -93,10 +93,7 @@ void Door::EV_ChangeVal(DoorData* pdata)
 
 void Door::SetStatus(uint8_t st)
 {
-	if((ELECTROMAGNET_CTRL_PPIN & (1 << ELECTROMAGNET_CTRL_PIN)) && (val != 0))
-		status = st + 0x40;	// E.M off
-	else
-		status = st;
+	status = st;
 }
 
 uint8_t Door::GetTransVal()
@@ -111,5 +108,8 @@ uint8_t Door::GetSubpos()
 
 uint8_t Door::GetStatus()
 {
-	return status;
+	if((ELECTROMAGNET_CTRL_PPIN & (1 << ELECTROMAGNET_CTRL_PIN)) && (val != 0))
+		return status + 0x40;	// E.M off
+	else
+		return	status;
 }
