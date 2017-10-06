@@ -83,6 +83,6 @@ void ElectromagnetTest()
 void DoorClosed()
 {
 	timer.Disable(TIMER_DOOR_CLOSED);
-	door.SetStatus(DOOR_STATE_CLOSED);
+	door.SetStatus(DOOR_STATE_OPENED_AND_CLOSED);
 	door.sub_pos = 0;
 }
