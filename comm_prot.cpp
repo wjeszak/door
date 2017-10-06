@@ -35,6 +35,7 @@ void Comm_prot::Parse(uint8_t* frame)
 			if(transoptors.Check())
 			{
 				//comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());	// debug
+				door.SetStatus(DOOR_STATE_DOOR_NOT_YET_OPENED);
 				comm.Prepare(door.GetStatus());
 				door.required_position = command - 0xC0;
 				ELECTROMAGNET_ON;
