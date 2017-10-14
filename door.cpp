@@ -9,6 +9,7 @@
 #include "transoptors.h"
 #include "electromagnet.h"
 #include "timer.h"
+
 // sekwencja drzwi "felernych" (grubszych, krotsza listwa): 0, 1, 0, 2, 3, 1
 // sekwencja drzwi normalnych: 								0, 1, 0, 2, 3, 7
 
