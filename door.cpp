@@ -9,8 +9,11 @@
 #include "transoptors.h"
 #include "electromagnet.h"
 #include "timer.h"
+// sekwencja drzwi "felernych" (grubszych, krotsza listwa): 0, 1, 0, 2, 3, 1
+// sekwencja drzwi normalnych: 								0, 1, 0, 2, 3, 7
 
-uint8_t sequence_1[4] = {1, 2, 3, 7};		// rzecz. 0, 1, 0, 2, 3, 7
+uint8_t sequence_1_thin[4] =  {1, 2, 3, 7};			// cienkie
+uint8_t sequence_1_thick[4] = {1, 2, 3, 1};			// grube
 uint8_t sequence_n[6] = {5, 4, 6, 2, 3, 1};
 
 Door::Door()
@@ -50,18 +53,18 @@ void Door::EV_ChangeVal(DoorData* pdata)
 		{
 			// Drzwi musza byc w pozycji 1 a nastepnie przez 100 ms w 0 zeby uznac je za zamkniete.
 			// Mala szansa ze ktos zatrzyma drzwi w pozycji "drugiego" zera.
-			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 100, DoorClosed);
+			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 1000, DoorClosed);
 			// next position
 			if((sub_pos == 4) && (val == sequence_n[0])) { sub_pos = 0; SetStatus(++pos); }
 			// forward
-			if((val == sequence_1[sub_pos]) && (sub_pos <= 3))
+			if(((val == sequence_1_thick[sub_pos]) || (val == sequence_1_thin[sub_pos])) && (sub_pos <= 3))
 			{
 				SetStatus(0);
 				sub_pos++;
 				return;
 			}
 			// backward
-			if((val == sequence_1[sub_pos - 2]) && (sub_pos >= 2))
+			if(((val == sequence_1_thick[sub_pos - 2]) || (val == sequence_1_thin[sub_pos - 2])) && (sub_pos >= 2))
 			{
 				sub_pos--;
 				return;
