@@ -70,9 +70,9 @@ ISR(TIMER0_COMPA_vect)
 	timer.Irq();
 }
 // -----------------------------------------------------------------
-void ElectromagnetTest()
+void ElmTest()
 {
-	if(ELECTROMAGNET_TEST_COIL_PPIN & (1 << ELECTROMAGNET_TEST_COIL_PIN))
+	if(ELM_TEST_COIL_PPIN & (1 << ELM_TEST_COIL_PIN))
 #ifdef DEBUG
 		comm.Prepare(0,0, F05_ELECTROMAGNET_FAULT);
 #else
@@ -84,8 +84,8 @@ void ElectromagnetTest()
 #else
 	comm.Prepare(0x00);
 #endif
-	ELECTROMAGNET_OFF;
-	timer.Disable(TIMER_TEST_ELECTROMAGNET);
+	ELM_OFF;
+	timer.Disable(TIMER_TEST_ELM);
 }
 
 void DoorClosed()

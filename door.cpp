@@ -23,6 +23,7 @@ Door::Door()
 	pos = 0;
 	last_val = 0;
 	val = transoptors.Read();
+	// Power ON
 	if(val == 0)
 	{
 		zero_achieved = true;
@@ -30,13 +31,13 @@ Door::Door()
 	}
 	else
 	{
-		SetStatus(0);
+		SetStatus(DOOR_STATE_OPENED);
 	}
 }
 
 void Door::EV_ChangeVal(DoorData* pdata)
 {
-	if(pos == required_position) ELECTROMAGNET_OFF;
+	if(pos == required_position) ELM_OFF;
 	timer.Disable(TIMER_DOOR_CLOSED);
 	last_val = val;
 	val = transoptors.Read();
@@ -53,7 +54,7 @@ void Door::EV_ChangeVal(DoorData* pdata)
 		{
 			// Drzwi musza byc w pozycji 1 a nastepnie przez 100 ms w 0 zeby uznac je za zamkniete.
 			// Mala szansa ze ktos zatrzyma drzwi w pozycji "drugiego" zera.
-			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 1000, DoorClosed);
+			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 5000, DoorClosed);
 			// next position
 			if((sub_pos == 4) && (val == sequence_n[0])) { sub_pos = 0; SetStatus(++pos); }
 			// forward
@@ -111,8 +112,11 @@ uint8_t Door::GetSubpos()
 
 uint8_t Door::GetStatus()
 {
-	if((ELECTROMAGNET_CTRL_PPIN & (1 << ELECTROMAGNET_CTRL_PIN)) && (val != 0))
-		return status + 0x40;	// E.M off
+	if(status == DOOR_STATE_CLOSED || status == DOOR_STATE_OPENED_AND_CLOSED || status == DOOR_STATE_DOOR_NOT_YET_OPENED)
+		return status;
 	else
-		return	status;
+		if(elm.ElmOn())
+			return	status;
+		else
+			return	status + DOOR_STATE_EM_OFF;
 }

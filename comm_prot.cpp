@@ -26,8 +26,8 @@ void Comm_prot::Parse(uint8_t* frame)
 		// check electromagnet
 		if(command == COMM_CHECK_ELECTROMAGNET)
 		{
-			ELECTROMAGNET_ON;
-			timer.Assign(TIMER_TEST_ELECTROMAGNET, 4, ElectromagnetTest);
+			ELM_ON;
+			timer.Assign(TIMER_TEST_ELM, 4, ElmTest);
 		}
 		// set state
 		if(((command & (1 << 7)) && (command & (1 << 6))))
@@ -41,7 +41,7 @@ void Comm_prot::Parse(uint8_t* frame)
 				comm.Prepare(door.GetStatus());
 #endif
 				door.required_position = command - 0xC0;
-				ELECTROMAGNET_ON;
+				ELM_ON;
 				return;
 			}
 			else

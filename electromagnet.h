@@ -11,26 +11,27 @@
 #include <avr/io.h>
 //#include "state_machine.h"
 
-#define ELECTROMAGNET_CTRL_DDR 			DDRC
-#define ELECTROMAGNET_CTRL_PORT 		PORTC
-#define ELECTROMAGNET_CTRL_PPIN 		PINC
-#define ELECTROMAGNET_CTRL_PIN 			2
+#define ELM_CTRL_DDR		 			DDRC
+#define ELM_CTRL_PORT			 		PORTC
+#define ELM_CTRL_PPIN			 		PINC
+#define ELM_CTRL_PIN		 			2
 
-#define ELECTROMAGNET_TEST_COIL_DDR		DDRB
-#define ELECTROMAGNET_TEST_COIL_PPIN 	PINB
-#define ELECTROMAGNET_TEST_COIL_PIN		1
+#define ELM_TEST_COIL_DDR				DDRB
+#define ELM_TEST_COIL_PPIN 				PINB
+#define ELM_TEST_COIL_PIN				1
 
-#define ELECTROMAGNET_INIT 				ELECTROMAGNET_CTRL_DDR |= (1 << ELECTROMAGNET_CTRL_PIN); ELECTROMAGNET_OFF
+#define ELM_ON			 				ELM_CTRL_PORT &= ~(1 << ELM_CTRL_PIN)
+#define ELM_OFF			 				ELM_CTRL_PORT |=  (1 << ELM_CTRL_PIN)
 
-#define ELECTROMAGNET_ON 				ELECTROMAGNET_CTRL_PORT &= ~(1 << ELECTROMAGNET_CTRL_PIN)
-#define ELECTROMAGNET_OFF 				ELECTROMAGNET_CTRL_PORT |=  (1 << ELECTROMAGNET_CTRL_PIN)
+#define ELM_INIT 						ELM_CTRL_DDR |= (1 << ELM_CTRL_PIN); ELM_OFF
 
-class Electromagnet
+class Elm
 {
 public:
-	Electromagnet();
+	Elm();
+	bool ElmOn();
 };
 
-extern Electromagnet electromagnet;
+extern Elm elm;
 
 #endif /* ELECTROMAGNET_H_ */

@@ -13,7 +13,8 @@
 #define DOOR_STATE_CLOSED 					0xC0
 #define DOOR_STATE_OPENED_AND_CLOSED 		0xD0
 #define DOOR_STATE_DOOR_NOT_YET_OPENED		0x80
-#define DOOR_STATE_OPENED 					0x40
+#define DOOR_STATE_OPENED 					0x00
+#define DOOR_STATE_EM_OFF 					0x40
 // reply in command 0x02
 #define F03_OPTICAL_SWITCHES_FAULT 			0xF0
 // reply in command 0x01
@@ -32,24 +33,12 @@ public:
 	// Events
 	void EV_ChangeVal(DoorData* pdata);
 	void SetStatus(uint8_t st);
-
 	uint8_t GetTransVal();
 	uint8_t GetSubpos();
 	uint8_t GetStatus();
 	uint8_t required_position;
 	uint8_t sub_pos;
 private:
-	// States functions
-	void ST_Init(DoorData* pdata = NULL);
-	void ST_Closed(DoorData* pdata);
-	void ST_Opened(DoorData* pdata);
-//	uint8_t CmpArrays(uint8_t* tab1, uint8_t* tab2, uint8_t len);
-	enum States {ST_INIT = 0, ST_CLOSED, ST_OPENED, ST_MAX_STATES};
-	BEGIN_STATE_MAP
-		STATE_MAP_ENTRY(&Door::ST_Init)
-		STATE_MAP_ENTRY(&Door::ST_Closed)
-		STATE_MAP_ENTRY(&Door::ST_Opened)
-	END_STATE_MAP
 	uint8_t status, pos, val, last_val;
 	bool zero_achieved;
 };
