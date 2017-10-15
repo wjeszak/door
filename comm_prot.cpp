@@ -30,7 +30,7 @@ void Comm_prot::Parse(uint8_t* frame)
 			timer.Assign(TIMER_TEST_ELM, 4, ElmTest);
 		}
 		// set state
-		if(((command & (1 << 7)) && (command & (1 << 6))))
+		if(COMM_GET_SET_STATUS)
 		{
 			if(transoptors.Check())
 			{
@@ -40,7 +40,7 @@ void Comm_prot::Parse(uint8_t* frame)
 #else
 				comm.Prepare(door.GetStatus());
 #endif
-				door.required_position = command - 0xC0;
+				door.required_position = command - COMM_GET_SET_STATUS;
 				ELM_ON;
 				return;
 			}
@@ -55,7 +55,7 @@ void Comm_prot::Parse(uint8_t* frame)
 			}
 		}
 		// get state
-		if(command & (1 << 7))
+		if(COMM_GET_STATUS)
 		{
 			if(transoptors.Check())
 #ifdef DEBUG

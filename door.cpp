@@ -22,7 +22,6 @@ Door::Door()
 	sub_pos = 0;
 	pos = 0;
 	last_val = 0;
-	cnt = 0;
 	val = transoptors.Read();
 	// Power ON
 	if(val == 0)
