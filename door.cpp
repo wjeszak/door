@@ -52,6 +52,7 @@ void Door::EV_ChangeVal(DoorData* pdata)
 	{
 		if(pos == 0)
 		{
+			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 5000, DoorClosed);
 			// next position
 			if(sub_pos == 4 && val == sequence_n[0]) { sub_pos = 0; SetStatus(++pos); }
 			// forward
