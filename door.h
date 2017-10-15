@@ -39,7 +39,7 @@ public:
 	uint8_t required_position;
 	uint8_t sub_pos;
 private:
-	uint8_t status, pos, val, last_val;
+	uint8_t status, pos, val, last_val, last_but_one, cnt;
 	bool zero_achieved;
 };
 
