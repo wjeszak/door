@@ -13,7 +13,7 @@
 
 #define NUMBER_OF_TIMERS 				2
 
-#define TIMER_TEST_ELECTROMAGNET		0
+#define TIMER_TEST_ELM					0
 #define TIMER_DOOR_CLOSED 				1
 
 enum T0Prescallers
@@ -47,7 +47,7 @@ private:
 
 extern Timer timer;
 
-extern void ElectromagnetTest();
+extern void ElmTest();
 extern void DoorClosed();
 
 #endif /* TIMER_H_ */

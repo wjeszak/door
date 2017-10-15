@@ -9,9 +9,12 @@
 #include "transoptors.h"
 #include "electromagnet.h"
 #include "timer.h"
+// sekwencja drzwi normalnych: 								0, 1, 0, 2, 3, 7
+// sekwencja drzwi "felernych" (grubszych, krotsza listwa): 0, 1, 0, 2, 3, 1
 
-uint8_t sequence_1[4] = {1, 2, 3, 7};		// rzecz. 0, 1, 0, 2, 3, 7
-uint8_t sequence_n[6] = {5, 4, 6, 2, 3, 1};
+uint8_t sequence_1_thin[4]  = {1, 2, 3, 7};			// cienkie
+uint8_t sequence_1_thick[4] = {1, 2, 3, 1};			// grube
+uint8_t sequence_n[6]       = {5, 4, 6, 2, 3, 1};
 
 Door::Door()
 {
@@ -19,7 +22,9 @@ Door::Door()
 	sub_pos = 0;
 	pos = 0;
 	last_val = 0;
+	cnt = 0;
 	val = transoptors.Read();
+	// Power ON
 	if(val == 0)
 	{
 		zero_achieved = true;
@@ -27,17 +32,16 @@ Door::Door()
 	}
 	else
 	{
-		SetStatus(0);
+		SetStatus(DOOR_STATE_OPENED);
 	}
 }
 
 void Door::EV_ChangeVal(DoorData* pdata)
 {
-	if(pos == required_position) ELECTROMAGNET_OFF;
-	timer.Disable(TIMER_DOOR_CLOSED);
+	if(pos == required_position) ELM_OFF;
 	last_val = val;
 	val = transoptors.Read();
-	if(!zero_achieved && (last_val == 1) && (val == 0))
+	if(!zero_achieved && last_val == 1 && val == 0)
 	{
 		zero_achieved = true;
 		SetStatus(DOOR_STATE_CLOSED);
@@ -48,20 +52,17 @@ void Door::EV_ChangeVal(DoorData* pdata)
 	{
 		if(pos == 0)
 		{
-			// Drzwi musza byc w pozycji 1 a nastepnie przez 100 ms w 0 zeby uznac je za zamkniete.
-			// Mala szansa ze ktos zatrzyma drzwi w pozycji "drugiego" zera.
-			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 100, DoorClosed);
 			// next position
-			if((sub_pos == 4) && (val == sequence_n[0])) { sub_pos = 0; SetStatus(++pos); }
+			if(sub_pos == 4 && val == sequence_n[0]) { sub_pos = 0; SetStatus(++pos); }
 			// forward
-			if((val == sequence_1[sub_pos]) && (sub_pos <= 3))
+			if(((val == sequence_1_thick[sub_pos]) || (val == sequence_1_thin[sub_pos])) && (sub_pos <= 3))
 			{
-				SetStatus(0);
+				SetStatus(DOOR_STATE_OPENED);
 				sub_pos++;
 				return;
 			}
 			// backward
-			if((val == sequence_1[sub_pos - 2]) && (sub_pos >= 2))
+			if(((val == sequence_1_thick[sub_pos - 2]) || (val == sequence_1_thin[sub_pos - 2])) && (sub_pos >= 2))
 			{
 				sub_pos--;
 				return;
@@ -83,10 +84,11 @@ void Door::EV_ChangeVal(DoorData* pdata)
 				sub_pos--;
 				return;
 			}
+			// 1 -> 0,  v -  		 v -
+			if(((val == 7) || val == 1) && (sub_pos == 1) && pos == 1) { sub_pos = 4; SetStatus(--pos); return; }
 			// n -> n - 1
 			if((val == 1) && (sub_pos == 1)) { sub_pos = 6; SetStatus(--pos); }
-			// 1 -> 0
-			if((val == 7) && (sub_pos == 1)) { sub_pos = 4; SetStatus(--pos); }
+
 		}
 	}
 }
@@ -108,8 +110,11 @@ uint8_t Door::GetSubpos()
 
 uint8_t Door::GetStatus()
 {
-	if((ELECTROMAGNET_CTRL_PPIN & (1 << ELECTROMAGNET_CTRL_PIN)) && (val != 0))
-		return status + 0x40;	// E.M off
+	if(status == DOOR_STATE_CLOSED || status == DOOR_STATE_OPENED_AND_CLOSED || status == DOOR_STATE_DOOR_NOT_YET_OPENED)
+		return status;
 	else
-		return	status;
+		if(elm.ElmOn())
+			return	status;
+		else
+			return	status + DOOR_STATE_EM_OFF;
 }

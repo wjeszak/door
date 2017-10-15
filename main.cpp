@@ -15,7 +15,7 @@
 
 Timer timer(T0_PS_64, 115);
 Transoptors transoptors;
-Electromagnet electromagnet;
+Elm elm;
 DoorData door_data;
 Door door;
 UsartData usart_data;

@@ -7,7 +7,14 @@
 
 #include "electromagnet.h"
 
-Electromagnet::Electromagnet()
+Elm::Elm()
 {
-	ELECTROMAGNET_INIT;
+	ELM_INIT;
+}
+
+bool Elm::ElmOn()
+{
+	if(!(ELM_CTRL_PPIN & (1 << ELM_CTRL_PIN)))
+		return true;
+	return false;
 }

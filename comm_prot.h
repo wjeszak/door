@@ -10,8 +10,10 @@
 
 #include <inttypes.h>
 
-#define FRAME_LENGTH_REQUEST 		4
-#define FRAME_LENGTH_RESPONSE 		4
+#define DEBUG
+
+#define FRAME_LENGTH_REQUEST 				4
+//#define FRAME_LENGTH_RESPONSE 				4
 
 #define COMM_CHECK_ELECTROMAGNET 			0x01
 #define COMM_CHECK_TRANSOPTORS_GET_STATUS 	0x02
@@ -22,8 +24,11 @@ class Comm_prot
 public:
 	Comm_prot();
 	void Parse(uint8_t* frame);
+#ifdef DEBUG
 	void Prepare(uint8_t trans_val, uint8_t sub_pos, uint8_t status); 			// debug
+#else
 	void Prepare(uint8_t status);
+#endif
 private:
 	uint8_t Crc8(uint8_t* frame, uint8_t len);
 	uint8_t address;
