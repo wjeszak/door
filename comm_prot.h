@@ -10,7 +10,7 @@
 
 #include <inttypes.h>
 
-#define DEBUG
+//#define DEBUG
 
 #define FRAME_LENGTH_REQUEST 				4
 //#define FRAME_LENGTH_RESPONSE 				4
