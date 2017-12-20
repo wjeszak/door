@@ -14,7 +14,7 @@
 
 Comm_prot::Comm_prot()
 {
-	address = 7;
+	address = 13;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -40,7 +40,8 @@ void Comm_prot::Parse(uint8_t* frame)
 #else
 				comm.Prepare(door.GetStatus());
 #endif
-				door.required_position = command - COMM_GET_SET_STATUS;
+				door.required_position = 0;
+				door.required_position = command - 0xC0;//COMM_GET_SET_STATUS;
 				ELM_ON;
 				return;
 			}
