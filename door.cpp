@@ -9,6 +9,9 @@
 #include "transoptors.h"
 #include "electromagnet.h"
 #include "timer.h"
+
+#define POS_TO_OFF 			2
+
 // sekwencja drzwi normalnych: 								0, 1, 0, 2, 3, 7
 // sekwencja drzwi "felernych" (grubszych, krotsza listwa): 0, 1, 0, 2, 3, 1
 
@@ -37,7 +40,11 @@ Door::Door()
 
 void Door::EV_ChangeVal(DoorData* pdata)
 {
-	if(pos == required_position) ELM_OFF;
+	if(required_position <= 3 && pos == 1) ELM_OFF;
+	if(required_position >= 4 && required_position <= 6 && pos == 4) ELM_OFF;
+	if(required_position >= 7 && required_position <= 9 && pos == 7) ELM_OFF;
+	if(required_position >= 10 && pos == required_position) ELM_OFF;
+	//if(pos == required_position - POS_TO_OFF) ELM_OFF;
 	timer.Disable(TIMER_DOOR_CLOSED);
 	last_val = val;
 	val = transoptors.Read();
