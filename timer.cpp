@@ -87,7 +87,7 @@ void ElmTest()
 	ELM_OFF;
 	timer.Disable(TIMER_TEST_ELM);
 	// before next movement 0xD0 -> 0xC0
-	if(door.GetStatus() == DOOR_STATE_OPENED_AND_CLOSED) door.SetStatus(DOOR_STATE_CLOSED);
+	//if(door.GetStatus() == DOOR_STATE_OPENED_AND_CLOSED) door.SetStatus(DOOR_STATE_CLOSED);
 }
 
 void DoorClosed()

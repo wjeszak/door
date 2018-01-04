@@ -14,7 +14,7 @@
 
 Comm_prot::Comm_prot()
 {
-	address = 7;
+	address = 6;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -28,6 +28,12 @@ void Comm_prot::Parse(uint8_t* frame)
 		{
 			ELM_ON;
 			timer.Assign(TIMER_TEST_ELM, 4, ElmTest);
+		}
+		if(command == COMM_GET_STATUS_BEFORE_MOVEMENT)
+		{
+			// before next movement 0xD0 -> 0xC0
+			if(door.GetStatus() == DOOR_STATE_OPENED_AND_CLOSED) door.SetStatus(DOOR_STATE_CLOSED);
+			comm.Prepare(door.GetStatus());
 		}
 		// set state
 		if(COMM_GET_SET_STATUS)

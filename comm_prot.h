@@ -16,6 +16,7 @@
 //#define FRAME_LENGTH_RESPONSE 				4
 
 #define COMM_CHECK_ELECTROMAGNET 			0x01
+#define COMM_GET_STATUS_BEFORE_MOVEMENT 	0x02
 #define COMM_GET_STATUS 					command & (1 << 7)								// 0x80
 #define COMM_GET_SET_STATUS 				(command & (1 << 7)) && (command & (1 << 6))	// 0xC0
 
