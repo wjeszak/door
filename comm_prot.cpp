@@ -38,7 +38,9 @@ void Comm_prot::Parse(uint8_t* frame)
 		if(command == COMM_ELM_OFF)
 		{
 			ELM_OFF;
-			door.SetStatus(door.GetStatus() - 0x40);
+			uint8_t status = DOOR_STATE_CLOSED;
+			door.SetStatus(status);
+			comm.Prepare(status);
 		}
 		// set state
 		if(COMM_GET_SET_STATUS)
