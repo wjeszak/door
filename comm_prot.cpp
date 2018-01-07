@@ -42,6 +42,12 @@ void Comm_prot::Parse(uint8_t* frame)
 			door.SetStatus(status);
 			comm.Prepare(status);
 		}
+		if(command == COMM_ELM_OFF_ON)
+		{
+			ELM_OFF;
+			timer.Assign(TIMER_ELM_OFF_ON, 10, ElmOffOn);
+			comm.Prepare(door.GetStatus());
+		}
 		// set state
 		if(COMM_GET_SET_STATUS)
 		{

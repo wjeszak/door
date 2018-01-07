@@ -96,3 +96,9 @@ void DoorClosed()
 	door.SetStatus(DOOR_STATE_OPENED_AND_CLOSED);
 	door.sub_pos = 0;
 }
+
+void ElmOffOn()
+{
+	timer.Disable(TIMER_ELM_OFF_ON);
+	ELM_ON;
+}
