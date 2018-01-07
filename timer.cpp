@@ -99,6 +99,6 @@ void DoorClosed()
 
 void ElmOffOn()
 {
-	timer.Disable(TIMER_ELM_OFF_ON);
 	ELM_ON;
+	timer.Disable(TIMER_ELM_OFF_ON);
 }

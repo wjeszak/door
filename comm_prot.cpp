@@ -14,7 +14,7 @@
 
 Comm_prot::Comm_prot()
 {
-	address = 1;
+	address = 7;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -45,7 +45,7 @@ void Comm_prot::Parse(uint8_t* frame)
 		if(command == COMM_ELM_OFF_ON)
 		{
 			ELM_OFF;
-			timer.Assign(TIMER_ELM_OFF_ON, 10, ElmOffOn);
+			timer.Assign(TIMER_ELM_OFF_ON, 50, ElmOffOn);
 			comm.Prepare(door.GetStatus());
 		}
 		// set state
