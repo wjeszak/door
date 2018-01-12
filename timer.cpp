@@ -70,7 +70,7 @@ ISR(TIMER0_COMPA_vect)
 	timer.Irq();
 }
 // -----------------------------------------------------------------
-void ElmTest()
+void ElmTestDynabox()
 {
 	if(ELM_TEST_COIL_PPIN & (1 << ELM_TEST_COIL_PIN))
 #ifdef DEBUG
@@ -88,6 +88,28 @@ void ElmTest()
 	timer.Disable(TIMER_TEST_ELM);
 	// before next movement 0xD0 -> 0xC0
 	//if(door.GetStatus() == DOOR_STATE_OPENED_AND_CLOSED) door.SetStatus(DOOR_STATE_CLOSED);
+}
+
+void ElmTestLockerbox()
+{
+	timer.Disable(TIMER_TEST_ELM);
+
+	if(ELM_TEST_COIL_PPIN & (1 << ELM_TEST_COIL_PIN))
+	{
+		ELM_OFF;
+		comm.Prepare(F05_ELECTROMAGNET_FAULT);
+	}
+	else
+	{
+		ELM_OFF;
+		uint8_t status;
+		if(LOCK_PPIN & (1 << LOCK_PIN))
+			status = DOOR_STATE_EM_OFF;
+		else
+			status = DOOR_STATE_CLOSED;
+		door.SetStatus(status);
+		comm.Prepare(status);
+	}
 }
 
 void DoorClosed()

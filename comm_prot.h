@@ -13,13 +13,16 @@
 //#define DEBUG
 
 #define FRAME_LENGTH_REQUEST 				4
-
-#define COMM_CHECK_ELECTROMAGNET 			0x01
+// Dynabox
+#define COMM_CHECK_ELM			 			0x01
 #define COMM_GET_STATUS_BEFORE_MOVEMENT 	0x02
 #define COMM_ELM_OFF 						0x03
 #define COMM_ELM_OFF_ON 					0x04
 #define COMM_GET_STATUS 					command & (1 << 7)								// 0x80
 #define COMM_GET_SET_STATUS 				(command & (1 << 7)) && (command & (1 << 6))	// 0xC0
+
+// Lockerbox
+#define COMM_CHECK_ELM_GET_STATUS 			0x05
 
 class Comm_prot
 {

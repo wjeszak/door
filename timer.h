@@ -48,7 +48,8 @@ private:
 
 extern Timer timer;
 
-extern void ElmTest();
+extern void ElmTestDynabox();
+extern void ElmTestLockerbox();
 extern void DoorClosed();
 extern void ElmOffOn();
 

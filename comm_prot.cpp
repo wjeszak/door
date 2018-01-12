@@ -14,7 +14,7 @@
 
 Comm_prot::Comm_prot()
 {
-	address = 7;
+	address = 6;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -24,10 +24,10 @@ void Comm_prot::Parse(uint8_t* frame)
 	{
 		uint8_t command = frame[1];
 		// check electromagnet
-		if(command == COMM_CHECK_ELECTROMAGNET)
+		if(command == COMM_CHECK_ELM)
 		{
 			ELM_ON;
-			timer.Assign(TIMER_TEST_ELM, 4, ElmTest);
+			timer.Assign(TIMER_TEST_ELM, 4, ElmTestDynabox);
 		}
 		if(command == COMM_GET_STATUS_BEFORE_MOVEMENT)
 		{
@@ -47,6 +47,12 @@ void Comm_prot::Parse(uint8_t* frame)
 			ELM_OFF;
 			timer.Assign(TIMER_ELM_OFF_ON, 50, ElmOffOn);
 			comm.Prepare(door.GetStatus());
+		}
+		// Lockerbox
+		if(command == COMM_CHECK_ELM_GET_STATUS)
+		{
+			ELM_ON;
+			timer.Assign(TIMER_TEST_ELM, 4, ElmTestLockerbox);
 		}
 		// set state
 		if(COMM_GET_SET_STATUS)
