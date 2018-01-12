@@ -104,9 +104,9 @@ void ElmTestLockerbox()
 		ELM_OFF;
 		uint8_t status;
 		if(LOCK_PPIN & (1 << LOCK_PIN))
-			status = DOOR_STATE_EM_OFF;
-		else
 			status = DOOR_STATE_CLOSED;
+		else
+			status = DOOR_STATE_EM_OFF;
 		door.SetStatus(status);
 		comm.Prepare(status);
 	}
