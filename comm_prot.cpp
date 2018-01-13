@@ -49,10 +49,27 @@ void Comm_prot::Parse(uint8_t* frame)
 			comm.Prepare(door.GetStatus());
 		}
 		// Lockerbox
-		if(command == COMM_CHECK_ELM_GET_STATUS)
+		if(command == COMM_CHECK_ELM_GET_STATUS_LOCKERBOX)
 		{
 			ELM_ON;
-			timer.Assign(TIMER_TEST_ELM, 4, ElmTestLockerbox);
+			timer.Assign(TIMER_TEST_ELM, 1, ElmTestLockerbox);
+		}
+		if(command == COMM_GET_STATUS_LOCKERBOX)
+		{
+			uint8_t status;
+			if(LOCK_PPIN & (1 << LOCK_PIN))
+				status = DOOR_STATE_CLOSED;
+			else
+				status = DOOR_STATE_EM_OFF;
+			door.SetStatus(status);
+			comm.Prepare(status);
+		}
+
+		if(COMM_OPEN_LOCKERBOX)
+		{
+			uint8_t time = command & 0x1F;	// 5 LSB
+			ELM_ON;
+			timer.Assign(TIMER_OPEN_LOCKERBOX, time * 100, OpenLockerbox);
 		}
 		// set state
 		if(COMM_GET_SET_STATUS)
