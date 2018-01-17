@@ -9,9 +9,13 @@
 #define TIMER_H_
 
 #include <avr/io.h>
-#include <stdio.h>
+//#include <stdio.h>
 
-#define NUMBER_OF_TIMERS 				6
+enum TimerId
+{
+	TTest_Elm, TDoorClosed, TElmOffOn, TWaitingForOpen, TEmergencyOff, TEmergencyOn, TNumberOfTimers
+};
+/*#define NUMBER_OF_TIMERS 				6
 
 #define TIMER_TEST_ELM					0
 #define TIMER_DOOR_CLOSED 				1
@@ -19,7 +23,7 @@
 #define TIMER_WAITING_FOR_OPEN			3
 #define TIMER_EMERGENCY_OFF 			4 		// default 300 ms
 #define TIMER_EMERGENCY_ON 				5
-
+*/
 enum T0Prescallers
 {
 	T0_PS_0 = 0,
@@ -35,9 +39,9 @@ class Timer
 public:
 	Timer(T0Prescallers Prescaller, uint8_t Tick);
 	void Irq();
-	void Assign(uint8_t handler_id, uint16_t interval, void(*fp)());
-	void Enable (uint8_t handler_id);
-	void Disable (uint8_t handler_id);
+	void Assign(TimerId handler_id, uint16_t interval, void(*fp)());
+	void Enable (TimerId handler_id);
+	void Disable (TimerId handler_id);
 private:
 	struct TimerHandler
 	{
@@ -46,7 +50,7 @@ private:
 		uint16_t interval;
 		uint16_t counter;
 	};
-	TimerHandler timer_handlers[NUMBER_OF_TIMERS];
+	TimerHandler timer_handlers[TNumberOfTimers];
 };
 
 extern Timer timer;

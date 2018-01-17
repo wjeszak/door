@@ -13,7 +13,7 @@
 
 Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 {
-	for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
+	for(uint8_t n = 0; n < TNumberOfTimers; n++)
 	{
 		timer_handlers[n].active = false;
 		timer_handlers[n].counter = 0;
@@ -29,7 +29,7 @@ Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 
 void Timer::Irq()
 {
-	for(uint8_t n = 0; n < NUMBER_OF_TIMERS; n++)
+	for(uint8_t n = 0; n < TNumberOfTimers; n++)
 	{
 		if ((timer_handlers[n].active) && (timer_handlers[n].fp != NULL))
 		{
@@ -46,7 +46,7 @@ void Timer::Irq()
 	}
 }
 
-void Timer::Assign(uint8_t handler_id, uint16_t interval, void(*fp)())
+void Timer::Assign(TimerId handler_id, uint16_t interval, void(*fp)())
 {
 	timer_handlers[handler_id].interval = interval;
 	timer_handlers[handler_id].counter = 0;
@@ -54,13 +54,13 @@ void Timer::Assign(uint8_t handler_id, uint16_t interval, void(*fp)())
 	timer_handlers[handler_id].fp = fp;
 }
 
-void Timer::Enable(uint8_t handler_id)
+void Timer::Enable(TimerId handler_id)
 {
 	timer_handlers[handler_id].active = true;
 	timer_handlers[handler_id].counter = 0;
 }
 
-void Timer::Disable(uint8_t handler_id)
+void Timer::Disable(TimerId handler_id)
 {
 	timer_handlers[handler_id].active = false;
 }
@@ -85,14 +85,14 @@ void ElmTestDynabox()
 	comm.Prepare(0x00);
 #endif
 	ELM_OFF;
-	timer.Disable(TIMER_TEST_ELM);
+	timer.Disable(TTest_Elm);
 	// before next movement 0xD0 -> 0xC0
 	//if(door.GetStatus() == DOOR_STATE_OPENED_AND_CLOSED) door.SetStatus(DOOR_STATE_CLOSED);
 }
 
 void ElmTestLockerbox()
 {
-	timer.Disable(TIMER_TEST_ELM);
+	timer.Disable(TTest_Elm);
 
 	if(ELM_TEST_COIL_PPIN & (1 << ELM_TEST_COIL_PIN))
 	{
@@ -114,7 +114,7 @@ void ElmTestLockerbox()
 
 void DoorClosed()
 {
-	timer.Disable(TIMER_DOOR_CLOSED);
+	timer.Disable(TDoorClosed);
 	door.SetStatus(DOOR_STATE_OPENED_AND_CLOSED);
 	door.sub_pos = 0;
 }
@@ -122,7 +122,7 @@ void DoorClosed()
 void ElmOffOn()
 {
 	ELM_ON;
-	timer.Disable(TIMER_ELM_OFF_ON);
+	timer.Disable(TElmOffOn);
 }
 
 void WaitingForOpen()
@@ -132,9 +132,9 @@ void WaitingForOpen()
 	if(!(LOCK_PPIN & (1 << LOCK_PIN)))
 	{
 		ELM_OFF;
-		timer.Disable(TIMER_WAITING_FOR_OPEN);
-		timer.Disable(TIMER_EMERGENCY_OFF);
-		timer.Disable(TIMER_EMERGENCY_ON);
+		timer.Disable(TWaitingForOpen);
+		timer.Disable(TEmergencyOff);
+		timer.Disable(TEmergencyOn);
 		status = DOOR_STATE_EM_OFF;
 		door.SetStatus(status);
 		comm.Prepare(status);
@@ -143,22 +143,22 @@ void WaitingForOpen()
 
 void EmergencyOff()
 {
-	timer.Disable(TIMER_EMERGENCY_OFF);
+	timer.Disable(TEmergencyOff);
 	ELM_OFF;
-	timer.Assign(TIMER_EMERGENCY_ON, 2000, EmergencyOn);
+	timer.Assign(TEmergencyOn, 2000, EmergencyOn);
 }
 
 void EmergencyOn()
 {
-	timer.Disable(TIMER_EMERGENCY_ON);
+	timer.Disable(TEmergencyOn);
 	ELM_ON;
-	timer.Assign(TIMER_EMERGENCY_OFF, 450, EmergencyOff2);
+	timer.Assign(TEmergencyOff, 6000, EmergencyOff2);
 }
 
 void EmergencyOff2()
 {
-	timer.Disable(TIMER_EMERGENCY_OFF);
-	timer.Disable(TIMER_WAITING_FOR_OPEN);
+	timer.Disable(TEmergencyOff);
+	timer.Disable(TWaitingForOpen);
 	ELM_OFF;
-	// reply F07
+	comm.Prepare(0x07);
 }

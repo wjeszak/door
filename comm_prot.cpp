@@ -27,7 +27,7 @@ void Comm_prot::Parse(uint8_t* frame)
 		if(command == COMM_CHECK_ELM)
 		{
 			ELM_ON;
-			timer.Assign(TIMER_TEST_ELM, 4, ElmTestDynabox);
+			timer.Assign(TTest_Elm, 4, ElmTestDynabox);
 		}
 		if(command == COMM_GET_STATUS_BEFORE_MOVEMENT)
 		{
@@ -45,14 +45,14 @@ void Comm_prot::Parse(uint8_t* frame)
 		if(command == COMM_ELM_OFF_ON)
 		{
 			ELM_OFF;
-			timer.Assign(TIMER_ELM_OFF_ON, 50, ElmOffOn);
+			timer.Assign(TElmOffOn, 50, ElmOffOn);
 			comm.Prepare(door.GetStatus());
 		}
 		// Lockerbox
 		if(command == COMM_CHECK_ELM_GET_STATUS_LOCKERBOX)
 		{
 			ELM_ON;
-			timer.Assign(TIMER_TEST_ELM, 1, ElmTestLockerbox);
+			timer.Assign(TTest_Elm, 1, ElmTestLockerbox);
 		}
 		if(command == COMM_GET_STATUS_LOCKERBOX)
 		{
@@ -72,9 +72,9 @@ void Comm_prot::Parse(uint8_t* frame)
 			{
 				ELM_ON;
 				// polling lock
-				timer.Assign(TIMER_WAITING_FOR_OPEN, 1, WaitingForOpen);
+				timer.Assign(TWaitingForOpen, 1, WaitingForOpen);
 				uint8_t time = command - 0xE0;
-				timer.Assign(TIMER_EMERGENCY_OFF, time * 100, EmergencyOff);
+				timer.Assign(TEmergencyOff, time * 100, EmergencyOff);
 			}
 			else
 			{

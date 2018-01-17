@@ -45,7 +45,7 @@ void Door::EV_ChangeVal(DoorData* pdata)
 	if(required_position >= 7 && required_position <= 9 && pos == 7) ELM_OFF;
 	if(required_position >= 10 && pos == required_position) ELM_OFF;
 	//if(pos == required_position - POS_TO_OFF) ELM_OFF;
-	timer.Disable(TIMER_DOOR_CLOSED);
+	timer.Disable(TDoorClosed);
 	last_val = val;
 	val = transoptors.Read();
 	if(!zero_achieved && last_val == 1 && val == 0)
@@ -59,7 +59,7 @@ void Door::EV_ChangeVal(DoorData* pdata)
 	{
 		if(pos == 0)
 		{
-			if((last_val == 1) && (val == 0)) timer.Assign(TIMER_DOOR_CLOSED, 1000, DoorClosed);
+			if((last_val == 1) && (val == 0)) timer.Assign(TDoorClosed, 1000, DoorClosed);
 			// next position
 			if(sub_pos == 4 && val == sequence_n[0]) { sub_pos = 0; SetStatus(++pos); }
 			// forward
