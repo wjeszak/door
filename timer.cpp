@@ -125,15 +125,16 @@ void ElmOffOn()
 	timer.Disable(TIMER_ELM_OFF_ON);
 }
 
-void OpenLockerbox()
+void WaitingForOpen()
 {
-	timer.Disable(TIMER_OPEN_LOCKERBOX);
-	ELM_OFF;
 	uint8_t status;
-	if(LOCK_PPIN & (1 << LOCK_PIN))
-		status = DOOR_STATE_CLOSED;
-	else
+	// opened
+	if(!(LOCK_PPIN & (1 << LOCK_PIN)))
+	{
+		ELM_OFF;
+		timer.Disable(TIMER_WAITING_FOR_OPEN);
 		status = DOOR_STATE_EM_OFF;
-	door.SetStatus(status);
-	comm.Prepare(status);
+		door.SetStatus(status);
+		comm.Prepare(status);
+	}
 }

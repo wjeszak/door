@@ -67,9 +67,17 @@ void Comm_prot::Parse(uint8_t* frame)
 
 		if(COMM_OPEN_LOCKERBOX)
 		{
-			uint8_t time = command & 0x1F;	// 5 LSB
-			ELM_ON;
-			timer.Assign(TIMER_OPEN_LOCKERBOX, time * 100, OpenLockerbox);
+			// if closed
+			if(LOCK_PPIN & (1 << LOCK_PIN))
+			{
+				ELM_ON;
+				timer.Assign(TIMER_WAITING_FOR_OPEN, 1, WaitingForOpen);
+			}
+			else
+			{
+				comm.Prepare(DOOR_STATE_EM_OFF);
+			}
+			return;
 		}
 		// set state
 		if(COMM_GET_SET_STATUS)

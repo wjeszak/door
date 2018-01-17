@@ -16,7 +16,7 @@
 #define TIMER_TEST_ELM					0
 #define TIMER_DOOR_CLOSED 				1
 #define TIMER_ELM_OFF_ON 				2
-#define TIMER_OPEN_LOCKERBOX			3
+#define TIMER_WAITING_FOR_OPEN			3
 
 enum T0Prescallers
 {
@@ -53,6 +53,6 @@ extern void ElmTestDynabox();
 extern void ElmTestLockerbox();
 extern void DoorClosed();
 extern void ElmOffOn();
-extern void OpenLockerbox();
+extern void WaitingForOpen();
 
 #endif /* TIMER_H_ */

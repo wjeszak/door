@@ -13,7 +13,7 @@
 #define LOCK_DDR 							DDRB
 #define LOCK_PORT 							PORTB
 #define LOCK_PPIN							PINB
-#define LOCK_PIN 							0
+#define LOCK_PIN 							0			// F, closed -> hi, opened -> lo
 // -------------------------------------------------------
 
 #define DOOR_STATE_CLOSED 					0xC0
