@@ -133,8 +133,32 @@ void WaitingForOpen()
 	{
 		ELM_OFF;
 		timer.Disable(TIMER_WAITING_FOR_OPEN);
+		timer.Disable(TIMER_EMERGENCY_OFF);
+		timer.Disable(TIMER_EMERGENCY_ON);
 		status = DOOR_STATE_EM_OFF;
 		door.SetStatus(status);
 		comm.Prepare(status);
 	}
+}
+
+void EmergencyOff()
+{
+	timer.Disable(TIMER_EMERGENCY_OFF);
+	ELM_OFF;
+	timer.Assign(TIMER_EMERGENCY_ON, 2000, EmergencyOn);
+}
+
+void EmergencyOn()
+{
+	timer.Disable(TIMER_EMERGENCY_ON);
+	ELM_ON;
+	timer.Assign(TIMER_EMERGENCY_OFF, 450, EmergencyOff2);
+}
+
+void EmergencyOff2()
+{
+	timer.Disable(TIMER_EMERGENCY_OFF);
+	timer.Disable(TIMER_WAITING_FOR_OPEN);
+	ELM_OFF;
+	// reply F07
 }

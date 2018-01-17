@@ -11,12 +11,14 @@
 #include <avr/io.h>
 #include <stdio.h>
 
-#define NUMBER_OF_TIMERS 				4
+#define NUMBER_OF_TIMERS 				6
 
 #define TIMER_TEST_ELM					0
 #define TIMER_DOOR_CLOSED 				1
 #define TIMER_ELM_OFF_ON 				2
 #define TIMER_WAITING_FOR_OPEN			3
+#define TIMER_EMERGENCY_OFF 			4 		// default 300 ms
+#define TIMER_EMERGENCY_ON 				5
 
 enum T0Prescallers
 {
@@ -54,5 +56,8 @@ extern void ElmTestLockerbox();
 extern void DoorClosed();
 extern void ElmOffOn();
 extern void WaitingForOpen();
+extern void EmergencyOff();
+extern void EmergencyOn();
+extern void EmergencyOff2();
 
 #endif /* TIMER_H_ */

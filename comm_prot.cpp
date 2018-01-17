@@ -71,7 +71,10 @@ void Comm_prot::Parse(uint8_t* frame)
 			if(LOCK_PPIN & (1 << LOCK_PIN))
 			{
 				ELM_ON;
+				// polling lock
 				timer.Assign(TIMER_WAITING_FOR_OPEN, 1, WaitingForOpen);
+				uint8_t time = command - 0xE0;
+				timer.Assign(TIMER_EMERGENCY_OFF, time * 100, EmergencyOff);
 			}
 			else
 			{
