@@ -14,7 +14,7 @@
 
 Comm_prot::Comm_prot()
 {
-	address = 6;
+	address = 1;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -67,6 +67,7 @@ void Comm_prot::Parse(uint8_t* frame)
 
 		if(COMM_OPEN_LOCKERBOX)
 		{
+			//comm.Prepare(0x55); // zmienic na cos bardziej strawnego, bedzie kolizja z elsem!!
 			// if closed
 			if(LOCK_PPIN & (1 << LOCK_PIN))
 			{
