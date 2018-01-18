@@ -67,19 +67,20 @@ void Comm_prot::Parse(uint8_t* frame)
 
 		if(COMM_OPEN_LOCKERBOX)
 		{
-			//comm.Prepare(0x55); // zmienic na cos bardziej strawnego, bedzie kolizja z elsem!!
+			comm.Prepare(0x00); // door ok
 			// if closed
 			if(LOCK_PPIN & (1 << LOCK_PIN))
 			{
 				ELM_ON;
 				// polling lock
 				timer.Assign(TWaitingForOpen, 1, WaitingForOpen);
-				uint8_t time = command - 0xE0;
-				timer.Assign(TEmergencyOff, time * 100, EmergencyOff);
+				//uint8_t time = command - 0xE0;
+				//timer.Assign(TEmergencyOff, time * 100, EmergencyOff);
+				timer.Assign(TEmergencyOff, LOCKERBOX_EMERG_ON1, EmergencyOff);
 			}
 			else
 			{
-				comm.Prepare(DOOR_STATE_EM_OFF);
+				 timer.Assign(TLockerboxOpenedReply, 1, LockerboxOpenedReply);
 			}
 			return;
 		}

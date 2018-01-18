@@ -145,14 +145,14 @@ void EmergencyOff()
 {
 	timer.Disable(TEmergencyOff);
 	ELM_OFF;
-	timer.Assign(TEmergencyOn, 50, EmergencyOn);
+	timer.Assign(TEmergencyOn, LOCKERBOX_EMERG_OFF, EmergencyOn);
 }
 
 void EmergencyOn()
 {
 	timer.Disable(TEmergencyOn);
 	ELM_ON;
-	timer.Assign(TEmergencyOff, 450, EmergencyOff2);
+	timer.Assign(TEmergencyOff, LOCKERBOX_EMERG_ON2, EmergencyOff2);
 }
 
 void EmergencyOff2()
@@ -161,4 +161,10 @@ void EmergencyOff2()
 	timer.Disable(TWaitingForOpen);
 	ELM_OFF;
 	comm.Prepare(0x07);
+}
+
+void LockerboxOpenedReply()
+{
+	timer.Disable(TLockerboxOpenedReply);
+	comm.Prepare(DOOR_STATE_EM_OFF);
 }

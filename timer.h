@@ -9,11 +9,10 @@
 #define TIMER_H_
 
 #include <avr/io.h>
-//#include <stdio.h>
 
 enum TimerId
 {
-	TTest_Elm, TDoorClosed, TElmOffOn, TWaitingForOpen, TEmergencyOff, TEmergencyOn, TNumberOfTimers
+	TTest_Elm, TDoorClosed, TElmOffOn, TWaitingForOpen, TEmergencyOff, TEmergencyOn, TLockerboxOpenedReply, TNumberOfTimers
 };
 /*#define NUMBER_OF_TIMERS 				6
 
@@ -24,6 +23,10 @@ enum TimerId
 #define TIMER_EMERGENCY_OFF 			4 		// default 300 ms
 #define TIMER_EMERGENCY_ON 				5
 */
+
+#define LOCKERBOX_EMERG_ON1				2000
+#define LOCKERBOX_EMERG_OFF				500
+#define LOCKERBOX_EMERG_ON2 			3000
 enum T0Prescallers
 {
 	T0_PS_0 = 0,
@@ -63,5 +66,6 @@ extern void WaitingForOpen();
 extern void EmergencyOff();
 extern void EmergencyOn();
 extern void EmergencyOff2();
+extern void LockerboxOpenedReply();
 
 #endif /* TIMER_H_ */
