@@ -145,7 +145,7 @@ void EmergencyOff()
 {
 	timer.Disable(TEmergencyOff);
 	ELM_OFF;
-	timer.Assign(TEmergencyOn, 500, EmergencyOn);
+	timer.Assign(TEmergencyOn, 50, EmergencyOn);
 }
 
 void EmergencyOn()
