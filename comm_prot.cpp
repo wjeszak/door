@@ -11,6 +11,7 @@
 #include "transoptors.h"
 #include "electromagnet.h"
 #include "door.h"
+#include "stamp.h"
 
 Comm_prot::Comm_prot()
 {
@@ -20,126 +21,138 @@ Comm_prot::Comm_prot()
 
 void Comm_prot::Parse(uint8_t* frame)
 {
-	uint8_t crc = Crc8(frame, 2);
-	if((frame[0] == address) && (frame[2] == crc))
+	if(!stamp.IsStampProgrammingMode()) 	// normal mode
 	{
-		uint8_t command = frame[1];
-		// check electromagnet
-		if(command == COMM_CHECK_ELM)
+		uint8_t crc = Crc8(frame, 2);
+		if((frame[0] == address) && (frame[2] == crc))
 		{
-			ELM_ON;
-			timer.Assign(TTest_Elm, 4, ElmTestDynabox);
-		}
-		if(command == COMM_GET_STATUS_BEFORE_MOVEMENT)
-		{
-			// before next movement 0xD0 -> 0xC0
-			if(door.GetStatus() == DOOR_STATE_OPENED_AND_CLOSED) door.SetStatus(DOOR_STATE_CLOSED);
-			comm.Prepare(door.GetStatus());
-		}
-		if(command == COMM_ELM_OFF)
-		{
-			ELM_OFF;
-			uint8_t status = DOOR_STATE_CLOSED;
-			door.SetStatus(status);
-			comm.Prepare(status);
-		}
-		if(command == COMM_ELM_OFF_ON)
-		{
-			ELM_OFF;
-			timer.Assign(TElmOffOn, 50, ElmOffOn);
-			comm.Prepare(door.GetStatus());
-		}
-		// Lockerbox
-		if(command == COMM_CHECK_ELM_GET_STATUS_LOCKERBOX)
-		{
-			ELM_ON;
-			timer.Assign(TTest_Elm, 1, ElmTestLockerbox);
-		}
-		if(command == COMM_GET_STATUS_LOCKERBOX)
-		{
-			if(door.lockerbox_has_been_opened && (LOCK_PPIN & (1 << LOCK_PIN)))
-			{
-				door.lockerbox_has_been_opened = false;
-				timer.Assign(TLockerboxD0Timer, 1000, LockerboxD0);
-				door.lockerbox_has_been_opened1 = true;
-				//return;
-			}
-			if(door.lockerbox_has_been_opened1)
-			{
-				comm.Prepare(0xD0);
-				return;
-			}
-			uint8_t status;
-			if(LOCK_PPIN & (1 << LOCK_PIN))
-				status = DOOR_STATE_CLOSED;
-			else
-				status = DOOR_STATE_EM_OFF_1STOP;
-			door.SetStatus(status);
-			comm.Prepare(status);
-		}
-
-		if(COMM_OPEN_LOCKERBOX)
-		{
-			comm.Prepare(0x00); // door ok
-			// if closed
-			if(LOCK_PPIN & (1 << LOCK_PIN))
+			uint8_t command = frame[1];
+			// check electromagnet
+			if(command == COMM_CHECK_ELM)
 			{
 				ELM_ON;
-				// polling lock
-				timer.Assign(TWaitingForOpen, 1, WaitingForOpen);
-				//uint8_t time = command - 0xE0;
-				//timer.Assign(TEmergencyOff, time * 100, EmergencyOff);
-				timer.Assign(TEmergencyOff, LOCKERBOX_EMERG_ON1, EmergencyOff);
+				timer.Assign(TTest_Elm, 4, ElmTestDynabox);
 			}
-			else
+			if(command == COMM_GET_STATUS_BEFORE_MOVEMENT)
 			{
-				 timer.Assign(TLockerboxOpenedReply, 1, LockerboxOpenedReply);
-			}
-			return;
-		}
-		// set state
-		if(COMM_GET_SET_STATUS)
-		{
-			if(transoptors.Check())
-			{
-				door.SetStatus(DOOR_STATE_DOOR_NOT_YET_OPENED);
-#ifdef DEBUG
-				comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());
-#else
+				// before next movement 0xD0 -> 0xC0
+				if(door.GetStatus() == DOOR_STATE_OPENED_AND_CLOSED) door.SetStatus(DOOR_STATE_CLOSED);
 				comm.Prepare(door.GetStatus());
-#endif
-				door.required_position = 0;
-				door.required_position = command - 0xC0;//COMM_GET_SET_STATUS;
+			}
+			if(command == COMM_ELM_OFF)
+			{
+				ELM_OFF;
+				uint8_t status = DOOR_STATE_CLOSED;
+				door.SetStatus(status);
+				comm.Prepare(status);
+			}
+			if(command == COMM_ELM_OFF_ON)
+			{
+				ELM_OFF;
+				timer.Assign(TElmOffOn, 50, ElmOffOn);
+				comm.Prepare(door.GetStatus());
+			}
+			// Lockerbox
+			if(command == COMM_CHECK_ELM_GET_STATUS_LOCKERBOX)
+			{
 				ELM_ON;
-				return;
+				timer.Assign(TTest_Elm, 1, ElmTestLockerbox);
 			}
-			else
+			if(command == COMM_GET_STATUS_LOCKERBOX)
 			{
-#ifdef DEBUG
-				comm.Prepare(door.GetTransVal(), door.GetSubpos(), F03_OPTICAL_SWITCHES_FAULT);
-#else
-				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
-#endif
+				if(door.lockerbox_has_been_opened && (LOCK_PPIN & (1 << LOCK_PIN)))
+				{
+					door.lockerbox_has_been_opened = false;
+					timer.Assign(TLockerboxD0Timer, 1000, LockerboxD0);
+					door.lockerbox_has_been_opened1 = true;
+					//return;
+				}
+				if(door.lockerbox_has_been_opened1)
+				{
+					comm.Prepare(0xD0);
+					return;
+				}
+				uint8_t status;
+				if(LOCK_PPIN & (1 << LOCK_PIN))
+					status = DOOR_STATE_CLOSED;
+				else
+					status = DOOR_STATE_EM_OFF_1STOP;
+				door.SetStatus(status);
+				comm.Prepare(status);
+			}
+
+			if(COMM_OPEN_LOCKERBOX)
+			{
+				comm.Prepare(0x00); // door ok
+				// if closed
+				if(LOCK_PPIN & (1 << LOCK_PIN))
+				{
+					ELM_ON;
+					// polling lock
+					timer.Assign(TWaitingForOpen, 1, WaitingForOpen);
+					//uint8_t time = command - 0xE0;
+					//timer.Assign(TEmergencyOff, time * 100, EmergencyOff);
+					timer.Assign(TEmergencyOff, LOCKERBOX_EMERG_ON1, EmergencyOff);
+				}
+				else
+				{
+					 timer.Assign(TLockerboxOpenedReply, 1, LockerboxOpenedReply);
+				}
 				return;
 			}
-		}
-		// get state
-		if(COMM_GET_STATUS)
-		{
-			if(transoptors.Check())
-#ifdef DEBUG
-				comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());
-#else
-				comm.Prepare(door.GetStatus());
-#endif
-			else
-#ifdef DEBUG
-				comm.Prepare(door.GetTransVal(), door.GetSubpos(), F03_OPTICAL_SWITCHES_FAULT);
-#else
-				comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
-#endif
-		}
+			// set state
+			if(COMM_GET_SET_STATUS)
+			{
+				if(transoptors.Check())
+				{
+					door.SetStatus(DOOR_STATE_DOOR_NOT_YET_OPENED);
+	#ifdef DEBUG
+					comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());
+	#else
+					comm.Prepare(door.GetStatus());
+	#endif
+					door.required_position = 0;
+					door.required_position = command - 0xC0;//COMM_GET_SET_STATUS;
+					ELM_ON;
+					return;
+				}
+				else
+				{
+	#ifdef DEBUG
+					comm.Prepare(door.GetTransVal(), door.GetSubpos(), F03_OPTICAL_SWITCHES_FAULT);
+	#else
+					comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
+	#endif
+					return;
+				}
+			}
+			// get state
+			if(COMM_GET_STATUS)
+			{
+				if(transoptors.Check())
+	#ifdef DEBUG
+					comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());
+	#else
+					comm.Prepare(door.GetStatus());
+	#endif
+				else
+	#ifdef DEBUG
+					comm.Prepare(door.GetTransVal(), door.GetSubpos(), F03_OPTICAL_SWITCHES_FAULT);
+	#else
+					comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
+	#endif
+			}
 
+		}
+	}
+	else		// stamp programming mode
+	{
+		uint8_t crc = Crc8(frame, 7);
+		if((frame[0] == 0x01) )//&& (frame[7] == crc))
+		{
+			comm.Prepare(0x55);
+			PORTD |= (1 << 4);
+		}
 	}
 }
 #ifdef DEBUG

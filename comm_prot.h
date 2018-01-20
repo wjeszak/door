@@ -12,7 +12,6 @@
 
 //#define DEBUG
 
-//#define FRAME_LENGTH_REQUEST 					4
 #define FRAME_LENGTH_NORMAL 					4
 #define FRAME_LENGTH_STAMP 						9
 // Dynabox
