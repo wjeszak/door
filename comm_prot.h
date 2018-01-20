@@ -12,7 +12,9 @@
 
 //#define DEBUG
 
-#define FRAME_LENGTH_REQUEST 					4
+//#define FRAME_LENGTH_REQUEST 					4
+#define FRAME_LENGTH_NORMAL 					4
+#define FRAME_LENGTH_STAMP 						9
 // Dynabox
 #define COMM_CHECK_ELM			 				0x01
 #define COMM_GET_STATUS_BEFORE_MOVEMENT 		0x02
@@ -31,6 +33,7 @@ class Comm_prot
 public:
 	Comm_prot();
 	void Parse(uint8_t* frame);
+	uint8_t frame_length;
 #ifdef DEBUG
 	void Prepare(uint8_t trans_val, uint8_t sub_pos, uint8_t status); 			// debug
 #else

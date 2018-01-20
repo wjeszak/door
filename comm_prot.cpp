@@ -14,6 +14,7 @@
 
 Comm_prot::Comm_prot()
 {
+	frame_length = 4;
 	address = 1;
 }
 

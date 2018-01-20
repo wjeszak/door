@@ -12,6 +12,7 @@
 #include "door.h"
 #include "usart.h"
 #include "comm_prot.h"
+#include "stamp.h"
 
 Timer timer(T0_PS_64, 115);
 Transoptors transoptors;
@@ -21,9 +22,19 @@ Door door;
 UsartData usart_data;
 Usart usart;
 Comm_prot comm;
+Stamp stamp;
 
 int main()
 {
+	if(stamp.IsStampProgrammingMode())
+	{
+		comm.frame_length = FRAME_LENGTH_STAMP;
+		PORTD &= ~(1 << 4); 	// green led on
+	}
+	else
+	{
+		comm.frame_length = FRAME_LENGTH_NORMAL;
+	}
 	sei();
 	while(1);
 }

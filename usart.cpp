@@ -90,7 +90,7 @@ void Usart::EV_NewByte(UsartData* pdata)
 		TRANSITION_MAP_ENTRY(ST_BYTE_RECEIVED)			// ST_BYTE_RECEIVED
     END_TRANSITION_MAP(pdata)
 
-	if((pdata->c == 0x0A) && (pdata->len == FRAME_LENGTH_REQUEST)) InternalEvent(ST_FRAME_RECEIVED, pdata);
+	if((pdata->c == 0x0A) && (pdata->len == comm.frame_length)) InternalEvent(ST_FRAME_RECEIVED, pdata);
 }
 
 void Usart::EV_TXBufferEmpty(UsartData* pdata)
