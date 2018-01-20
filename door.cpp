@@ -36,6 +36,7 @@ Door::Door()
 	{
 		SetStatus(DOOR_STATE_OPENED);
 	}
+lockerbox_has_been_opened = false;
 }
 
 void Door::EV_ChangeVal(DoorData* pdata)

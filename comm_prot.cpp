@@ -14,7 +14,7 @@
 
 Comm_prot::Comm_prot()
 {
-	address = 6;
+	address = 1;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -56,11 +56,23 @@ void Comm_prot::Parse(uint8_t* frame)
 		}
 		if(command == COMM_GET_STATUS_LOCKERBOX)
 		{
+			if(door.lockerbox_has_been_opened && (LOCK_PPIN & (1 << LOCK_PIN)))
+			{
+				door.lockerbox_has_been_opened = false;
+				timer.Assign(TLockerboxD0Timer, 1000, LockerboxD0);
+				door.lockerbox_has_been_opened1 = true;
+				//return;
+			}
+			if(door.lockerbox_has_been_opened1)
+			{
+				comm.Prepare(0xD0);
+				return;
+			}
 			uint8_t status;
 			if(LOCK_PPIN & (1 << LOCK_PIN))
 				status = DOOR_STATE_CLOSED;
 			else
-				status = DOOR_STATE_EM_OFF;
+				status = DOOR_STATE_EM_OFF_1STOP;
 			door.SetStatus(status);
 			comm.Prepare(status);
 		}

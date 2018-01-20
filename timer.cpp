@@ -106,7 +106,7 @@ void ElmTestLockerbox()
 		if(LOCK_PPIN & (1 << LOCK_PIN))
 			status = DOOR_STATE_CLOSED;
 		else
-			status = DOOR_STATE_EM_OFF;
+			status = DOOR_STATE_EM_OFF_1STOP;
 		door.SetStatus(status);
 		comm.Prepare(status);
 	}
@@ -135,9 +135,10 @@ void WaitingForOpen()
 		timer.Disable(TWaitingForOpen);
 		timer.Disable(TEmergencyOff);
 		timer.Disable(TEmergencyOn);
-		status = DOOR_STATE_EM_OFF;
+		status = DOOR_STATE_EM_OFF_1STOP;
 		door.SetStatus(status);
 		comm.Prepare(status);
+		door.lockerbox_has_been_opened = true;
 	}
 }
 
@@ -166,5 +167,13 @@ void EmergencyOff2()
 void LockerboxOpenedReply()
 {
 	timer.Disable(TLockerboxOpenedReply);
-	comm.Prepare(DOOR_STATE_EM_OFF);
+	door.SetStatus(DOOR_STATE_EM_OFF_1STOP);
+	comm.Prepare(DOOR_STATE_EM_OFF_1STOP);
+}
+
+void LockerboxD0()
+{
+	door.lockerbox_has_been_opened1 = false;
+	timer.Disable(TLockerboxD0Timer);
+	door.SetStatus(DOOR_STATE_CLOSED);
 }
