@@ -15,13 +15,13 @@
 
 Comm_prot::Comm_prot()
 {
-	frame_length = 4;
-	address = 1;
+	//frame_length = 4;
+	//address = stamp_data.address;
 }
 
 void Comm_prot::Parse(uint8_t* frame)
 {
-	if(!stamp.IsStampProgrammingMode()) 	// normal mode
+	if(!IsStampProgrammingMode()) 	// normal mode
 	{
 		uint8_t crc = Crc8(frame, 2);
 		if((frame[0] == address) && (frame[2] == crc))
@@ -148,10 +148,43 @@ void Comm_prot::Parse(uint8_t* frame)
 	else		// stamp programming mode
 	{
 		uint8_t crc = Crc8(frame, 7);
-		if((frame[0] == 0x01) )//&& (frame[7] == crc))
+		// read
+		if((frame[0] == 1) && (frame[7] == crc))
 		{
-			comm.Prepare(0x55);
-			PORTD |= (1 << 4);
+			eeprom_read_block(&stamp_data, &ee_stamp_data, sizeof(Stamp_data));
+			usart_data.frame[0] = 1;
+			usart_data.frame[1] = stamp_data.type_of_hardware;
+			usart_data.frame[2] = stamp_data.address;
+			usart_data.frame[3] = stamp_data.year;
+			usart_data.frame[4] = stamp_data.week;
+			usart_data.frame[5] = stamp_data.sn >> 8;
+			usart_data.frame[6] = stamp_data.sn & 0xFF;
+			usart_data.frame[7] = Crc8(frame, 7);
+			usart_data.frame[8] = 10;
+			usart_data.len = 9;
+			usart.SendFrame(&usart_data);
+		}
+		if((frame[0] == 2) && (frame[7] == crc))
+		{
+			stamp_data.type_of_hardware = usart_data.frame[1];
+			stamp_data.address = usart_data.frame[2];
+			stamp_data.year = usart_data.frame[3];
+			stamp_data.week = usart_data.frame[4];
+			stamp_data.sn = (usart_data.frame[5] << 8) | (usart_data.frame[6] & 0xFF);
+			eeprom_update_block(&stamp_data, &ee_stamp_data, sizeof(Stamp_data));
+
+			eeprom_read_block(&stamp_data, &ee_stamp_data, sizeof(Stamp_data));
+			usart_data.frame[0] = 2;
+			usart_data.frame[1] = stamp_data.type_of_hardware;
+			usart_data.frame[2] = stamp_data.address;
+			usart_data.frame[3] = stamp_data.year;
+			usart_data.frame[4] = stamp_data.week;
+			usart_data.frame[5] = stamp_data.sn >> 8;
+			usart_data.frame[6] = stamp_data.sn & 0xFF;
+			usart_data.frame[7] = Crc8(frame, 7);
+			usart_data.frame[8] = 10;
+			usart_data.len = 9;
+			usart.SendFrame(&usart_data);
 		}
 	}
 }

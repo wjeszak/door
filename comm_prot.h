@@ -38,9 +38,10 @@ public:
 #else
 	void Prepare(uint8_t status);
 #endif
+	uint8_t address;
 private:
 	uint8_t Crc8(uint8_t* frame, uint8_t len);
-	uint8_t address;
+
 };
 
 extern Comm_prot comm;

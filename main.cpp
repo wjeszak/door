@@ -6,6 +6,7 @@
  */
 
 #include <avr/interrupt.h>
+#include <avr/eeprom.h>
 #include "timer.h"
 #include "transoptors.h"
 #include "electromagnet.h"
@@ -22,11 +23,13 @@ Door door;
 UsartData usart_data;
 Usart usart;
 Comm_prot comm;
-Stamp stamp;
 
 int main()
 {
-	if(stamp.IsStampProgrammingMode())
+	StampInit();
+	eeprom_read_block(&stamp_data, &ee_stamp_data, sizeof(Stamp_data));
+	comm.address = stamp_data.address;
+	if(IsStampProgrammingMode())
 	{
 		comm.frame_length = FRAME_LENGTH_STAMP;
 		PORTD &= ~(1 << 4); 	// green led on
