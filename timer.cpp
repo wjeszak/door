@@ -138,7 +138,7 @@ void WaitingForOpen()
 		status = DOOR_STATE_EM_OFF_1STOP;
 		door.SetStatus(status);
 		comm.Prepare(status);
-		door.lockerbox_has_been_opened = true;
+		//door.lockerbox_has_been_opened = true;
 	}
 }
 
@@ -170,10 +170,11 @@ void LockerboxOpenedReply()
 	door.SetStatus(DOOR_STATE_EM_OFF_1STOP);
 	comm.Prepare(DOOR_STATE_EM_OFF_1STOP);
 }
-
+/*
 void LockerboxD0()
 {
 	door.lockerbox_has_been_opened1 = false;
 	timer.Disable(TLockerboxD0Timer);
 	door.SetStatus(DOOR_STATE_CLOSED);
 }
+*/

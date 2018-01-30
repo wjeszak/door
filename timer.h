@@ -67,6 +67,6 @@ extern void EmergencyOff();
 extern void EmergencyOn();
 extern void EmergencyOff2();
 extern void LockerboxOpenedReply();
-extern void LockerboxD0();
+//extern void LockerboxD0();
 
 #endif /* TIMER_H_ */
