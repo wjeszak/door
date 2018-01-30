@@ -27,8 +27,6 @@
 // reply in command 0x01
 #define F05_ELECTROMAGNET_FAULT 			0x01
 
-//extern bool lockerbox_has_been_opened;
-
 class DoorData : public EventData
 {
 public:
@@ -47,8 +45,6 @@ public:
 	uint8_t GetStatus();
 	uint8_t required_position;
 	uint8_t sub_pos;
-//	bool lockerbox_has_been_opened;
-//	bool lockerbox_has_been_opened1;
 private:
 	uint8_t status, pos, val, last_val;
 	bool zero_achieved;

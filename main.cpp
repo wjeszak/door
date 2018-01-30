@@ -23,7 +23,7 @@ DoorData door_data;
 Door door;
 UsartData usart_data;
 Usart usart;
-Comm_prot comm;
+Comm comm;
 
 int main()
 {

@@ -8,141 +8,49 @@
 #include "comm.h"
 #include "usart.h"
 #include "timer.h"
-#include "transoptors.h"
-#include "electromagnet.h"
 #include "door.h"
 #include "stamp.h"
+#include "commands_dynabox.h"
+#include "commands_lockerbox.h"
 
-Comm_prot::Comm_prot()
+Comm::Comm()
 {
 
 }
 
-void Comm_prot::Parse(uint8_t* frame)
+bool Comm::FrameIsForMeAndCrcOk(uint8_t* frame, uint8_t address)
+{
+	uint8_t crc = Crc8(frame, FRAME_CRC);
+
+	if((frame[FRAME_ADDRESS] == address) && (frame[FRAME_CRC] == crc))
+		return true;
+	else
+		return false;
+}
+
+uint8_t Comm::GetCommand(uint8_t* frame)
+{
+	return frame[FRAME_DATA];
+}
+
+void Comm::Parse(uint8_t* frame)
 {
 	if(!IsStampProgrammingMode()) 	// normal mode
 	{
-		uint8_t crc = Crc8(frame, 2);
-		if((frame[0] == address) && (frame[2] == crc))
+		if(FrameIsForMeAndCrcOk(frame, stamp_data.address))
 		{
-			uint8_t command = frame[1];
-			// check electromagnet
-			if(command == COMM_CHECK_ELM)
-			{
-				ELM_ON;
-				timer.Assign(TTest_Elm, 4, ElmTestDynabox);
-			}
-			if(command == COMM_GET_STATUS_BEFORE_MOVEMENT)
-			{
-				// before next movement 0xD0 -> 0xC0
-				if(door.GetStatus() == DOOR_STATE_OPENED_AND_CLOSED) door.SetStatus(DOOR_STATE_CLOSED);
-				comm.Prepare(door.GetStatus());
-			}
-			if(command == COMM_ELM_OFF)
-			{
-				ELM_OFF;
-				uint8_t status = DOOR_STATE_CLOSED;
-				door.SetStatus(status);
-				comm.Prepare(status);
-			}
-			if(command == COMM_ELM_OFF_ON)
-			{
-				ELM_OFF;
-				timer.Assign(TElmOffOn, 50, ElmOffOn);
-				comm.Prepare(door.GetStatus());
-			}
-			// Lockerbox
-			if(command == COMM_CHECK_ELM_GET_STATUS_LOCKERBOX)
-			{
-				ELM_ON;
-				timer.Assign(TTest_Elm, 1, ElmTestLockerbox);
-			}
-			if(command == COMM_GET_STATUS_LOCKERBOX)
-			{
-				// opened & closed
-				if((door.GetStatus() == DOOR_STATE_EM_OFF_1STOP) && (LOCK_PPIN & (1 << LOCK_PIN)))
-				{
-					//door.SetStatus(DOOR_STATE_OPENED_AND_CLOSED);
-					comm.Prepare(DOOR_STATE_OPENED_AND_CLOSED);
-					return;
-				}
-				// closed
-				if(LOCK_PPIN & (1 << LOCK_PIN))
-				{
-					door.SetStatus(DOOR_STATE_CLOSED);
-					comm.Prepare(DOOR_STATE_CLOSED);
-					return;
-				}
-				// opened
-				if(!(LOCK_PPIN & (1 << LOCK_PIN)))
-				{
-					door.SetStatus(DOOR_STATE_EM_OFF_1STOP);
-					comm.Prepare(DOOR_STATE_EM_OFF_1STOP);
-					return;
-				}
-			}
+			uint8_t command = GetCommand(frame);
 
-			if(COMM_OPEN_LOCKERBOX)
-			{
-				comm.Prepare(0x00); // door ok
-				// if closed
-				if(LOCK_PPIN & (1 << LOCK_PIN))
-				{
-					ELM_ON;
-					// polling lock
-					timer.Assign(TWaitingForOpen, 1, WaitingForOpen);
-					//uint8_t time = command - 0xE0;
-					//timer.Assign(TEmergencyOff, time * 100, EmergencyOff);
-					timer.Assign(TEmergencyOff, LOCKERBOX_EMERG_ON1, EmergencyOff);
-				}
-				else
-				{
-					 timer.Assign(TLockerboxOpenedReply, 1, LockerboxOpenedReply);
-				}
-				return;
-			}
-			// set state
-			if(COMM_GET_SET_STATUS)
-			{
-				if(transoptors.Check())
-				{
-					door.SetStatus(DOOR_STATE_DOOR_NOT_YET_OPENED);
-	#ifdef DEBUG
-					comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());
-	#else
-					comm.Prepare(door.GetStatus());
-	#endif
-					door.required_position = 0;
-					door.required_position = command - 0xC0;//COMM_GET_SET_STATUS;
-					ELM_ON;
-					return;
-				}
-				else
-				{
-	#ifdef DEBUG
-					comm.Prepare(door.GetTransVal(), door.GetSubpos(), F03_OPTICAL_SWITCHES_FAULT);
-	#else
-					comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
-	#endif
-					return;
-				}
-			}
-			// get state
-			if(COMM_GET_STATUS)
-			{
-				if(transoptors.Check())
-	#ifdef DEBUG
-					comm.Prepare(door.GetTransVal(), door.GetSubpos(), door.GetStatus());
-	#else
-					comm.Prepare(door.GetStatus());
-	#endif
-				else
-	#ifdef DEBUG
-					comm.Prepare(door.GetTransVal(), door.GetSubpos(), F03_OPTICAL_SWITCHES_FAULT);
-	#else
-					comm.Prepare(F03_OPTICAL_SWITCHES_FAULT);
-	#endif
-			}
+			if(command == COMM_DYNABOX_CHECK_ELM) 				   { Dynabox_CheckElm(); 					return; }
+			if(command == COMM_DYNABOX_GET_STATUS_BEFORE_MOVEMENT) { Dynabox_GetStatusBeforeMovement(); 	return; }
+			if(command == COMM_DYNABOX_ELM_OFF)					   { Dynabox_ElmOff(); 						return; }
+			if(command == COMM_DYNABOX_ELM_OFF_ON) 				   { Dynabox_ElmOffOn(); 					return; }
+			if(COMM_DYNABOX_GET_STATUS) 						   { Dynabox_GetStatus(); 					return; }
+			if(COMM_DYNABOX_GET_SET_STATUS) 					   { Dynabox_GetSetStatus(command - 0xC0);	return; }
+
+			if(command == COMM_LOCKERBOX_CHECK_ELM_GET_STATUS) 	   { Lockerbox_CheckElmGetStatus(); 		return; }
+			if(command == COMM_LOCKERBOX_GET_STATUS) 			   { Lockerbox_GetStatus(); 				return; }
+			if(command == COMM_LOCKERBOX_OPEN) 					   { Lockerbox_Open(); 						return; }
 
 		}
 	}
@@ -189,20 +97,8 @@ void Comm_prot::Parse(uint8_t* frame)
 		}
 	}
 }
-#ifdef DEBUG
-void Comm_prot::Prepare(uint8_t trans_val, uint8_t sub_pos, uint8_t status)
-{
-	usart_data.frame[0] = address;
-	usart_data.frame[1] = trans_val;
-	usart_data.frame[2] = sub_pos;
-	usart_data.frame[3] = status;
-	usart_data.frame[4] = Crc8(usart_data.frame, 4);
-	usart_data.frame[5] = 0x0A;
-	usart_data.len = 6;
-	usart.SendFrame(&usart_data);
-}
-#else
-void Comm_prot::Prepare(uint8_t status)
+
+void Comm::Prepare(uint8_t status)
 {
 	usart_data.frame[0] = address;
 	usart_data.frame[1] = status;
@@ -211,8 +107,8 @@ void Comm_prot::Prepare(uint8_t status)
 	usart_data.len = 4;
 	usart.SendFrame(&usart_data);
 }
-#endif
-uint8_t Comm_prot::Crc8(uint8_t *frame, uint8_t len)
+
+uint8_t Comm::Crc8(uint8_t *frame, uint8_t len)
 {
 	uint8_t crc = 0x00;
 	for (uint8_t pos = 0; pos < len; pos++)

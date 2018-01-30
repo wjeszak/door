@@ -14,19 +14,11 @@ enum TimerId
 {
 	TTest_Elm, TDoorClosed, TElmOffOn, TWaitingForOpen, TEmergencyOff, TEmergencyOn, TLockerboxOpenedReply, TLockerboxD0Timer, TNumberOfTimers
 };
-/*#define NUMBER_OF_TIMERS 				6
-
-#define TIMER_TEST_ELM					0
-#define TIMER_DOOR_CLOSED 				1
-#define TIMER_ELM_OFF_ON 				2
-#define TIMER_WAITING_FOR_OPEN			3
-#define TIMER_EMERGENCY_OFF 			4 		// default 300 ms
-#define TIMER_EMERGENCY_ON 				5
-*/
 
 #define LOCKERBOX_EMERG_ON1				350
 #define LOCKERBOX_EMERG_OFF				500
 #define LOCKERBOX_EMERG_ON2 			450
+
 enum T0Prescallers
 {
 	T0_PS_0 = 0,
