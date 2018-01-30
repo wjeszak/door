@@ -7,12 +7,13 @@
 
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
+
+#include "comm.h"
 #include "timer.h"
 #include "transoptors.h"
 #include "electromagnet.h"
 #include "door.h"
 #include "usart.h"
-#include "comm_prot.h"
 #include "stamp.h"
 
 Timer timer(T0_PS_64, 115);

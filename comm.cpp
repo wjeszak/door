@@ -1,11 +1,11 @@
 /*
- * comm_prot.cpp
+ * comm.cpp
  *
  *  Created on: 27 cze 2017
  *      Author: tomek
  */
 
-#include "comm_prot.h"
+#include "comm.h"
 #include "usart.h"
 #include "timer.h"
 #include "transoptors.h"
@@ -15,8 +15,7 @@
 
 Comm_prot::Comm_prot()
 {
-	//frame_length = 4;
-	//address = stamp_data.address;
+
 }
 
 void Comm_prot::Parse(uint8_t* frame)
@@ -61,9 +60,9 @@ void Comm_prot::Parse(uint8_t* frame)
 			if(command == COMM_GET_STATUS_LOCKERBOX)
 			{
 				// opened & closed
-				if((door.GetStatus() == DOOR_STATE_OPENED) && (LOCK_PPIN & (1 << LOCK_PIN)))
+				if((door.GetStatus() == DOOR_STATE_EM_OFF_1STOP) && (LOCK_PPIN & (1 << LOCK_PIN)))
 				{
-					door.SetStatus(DOOR_STATE_OPENED_AND_CLOSED);
+					//door.SetStatus(DOOR_STATE_OPENED_AND_CLOSED);
 					comm.Prepare(DOOR_STATE_OPENED_AND_CLOSED);
 					return;
 				}
@@ -75,7 +74,7 @@ void Comm_prot::Parse(uint8_t* frame)
 					return;
 				}
 				// opened
-				if(!LOCK_PPIN & (1 << LOCK_PIN))
+				if(!(LOCK_PPIN & (1 << LOCK_PIN)))
 				{
 					door.SetStatus(DOOR_STATE_EM_OFF_1STOP);
 					comm.Prepare(DOOR_STATE_EM_OFF_1STOP);

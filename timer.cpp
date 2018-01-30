@@ -7,8 +7,9 @@
 
 #include <avr/interrupt.h>
 #include "timer.h"
+
+#include "comm.h"
 #include "electromagnet.h"
-#include "comm_prot.h"
 #include "door.h"
 
 Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
@@ -127,7 +128,6 @@ void ElmOffOn()
 
 void WaitingForOpen()
 {
-	uint8_t status;
 	// opened
 	if(!(LOCK_PPIN & (1 << LOCK_PIN)))
 	{
@@ -135,10 +135,8 @@ void WaitingForOpen()
 		timer.Disable(TWaitingForOpen);
 		timer.Disable(TEmergencyOff);
 		timer.Disable(TEmergencyOn);
-		status = DOOR_STATE_EM_OFF_1STOP;
-		door.SetStatus(status);
-		comm.Prepare(status);
-		//door.lockerbox_has_been_opened = true;
+		door.SetStatus(DOOR_STATE_EM_OFF_1STOP);
+		comm.Prepare(DOOR_STATE_EM_OFF_1STOP);
 	}
 }
 

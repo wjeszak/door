@@ -7,7 +7,8 @@
 
 #include <avr/interrupt.h>
 #include "usart.h"
-#include "comm_prot.h"
+
+#include "comm.h"
 
 Usart::Usart(uint16_t baud) : StateMachine(ST_MAX_STATES)
 {
