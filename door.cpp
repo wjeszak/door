@@ -36,7 +36,7 @@ Door::Door()
 	{
 		SetStatus(DOOR_STATE_OPENED);
 	}
-//lockerbox_has_been_opened = false;
+	lockerbox_has_been_opened = false;
 }
 
 void Door::EV_ChangeVal(DoorData* pdata)
@@ -123,7 +123,7 @@ uint8_t Door::GetStatus()
 		return status;
 	else
 		if(elm.ElmOn())
-			return	status;
+			return status;
 		else
-			return	status + DOOR_STATE_EM_OFF;
+			return status + DOOR_STATE_EM_OFF;
 }

@@ -19,25 +19,16 @@ void Lockerbox_CheckElmGetStatus()
 
 void Lockerbox_GetStatus()
 {
-	// opened & closed
-	if((door.GetStatus() == DOOR_STATE_EM_OFF_1STOP) && (IsClosed()))
+	if((door.lockerbox_has_been_opened && IsClosed()))
 	{
-		//door.SetStatus(DOOR_STATE_OPENED_AND_CLOSED);
 		comm.Prepare(DOOR_STATE_OPENED_AND_CLOSED);
 		return;
 	}
+
 	if(IsClosed())
-	{
-		door.SetStatus(DOOR_STATE_CLOSED);
 		comm.Prepare(DOOR_STATE_CLOSED);
-		return;
-	}
-	if(!IsClosed())
-	{
-		door.SetStatus(DOOR_STATE_EM_OFF_1STOP);
+	else
 		comm.Prepare(DOOR_STATE_EM_OFF_1STOP);
-		return;
-	}
 }
 
 void Lockerbox_Open()

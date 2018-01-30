@@ -11,6 +11,7 @@
 #include "comm.h"
 #include "electromagnet.h"
 #include "door.h"
+#include "commands_lockerbox.h"
 
 Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 {
@@ -74,17 +75,9 @@ ISR(TIMER0_COMPA_vect)
 void ElmTestDynabox()
 {
 	if(ELM_TEST_COIL_PPIN & (1 << ELM_TEST_COIL_PIN))
-#ifdef DEBUG
-		comm.Prepare(0,0, F05_ELECTROMAGNET_FAULT);
-#else
-	comm.Prepare(F05_ELECTROMAGNET_FAULT);
-#endif
+		comm.Prepare(F05_ELECTROMAGNET_FAULT);
 	else
-#ifdef DEBUG
-		comm.Prepare(0,0, 0x00);
-#else
-	comm.Prepare(0x00);
-#endif
+		comm.Prepare(0x00);
 	ELM_OFF;
 	timer.Disable(TTest_Elm);
 	// before next movement 0xD0 -> 0xC0
@@ -128,15 +121,14 @@ void ElmOffOn()
 
 void WaitingForOpen()
 {
-	// opened
-	if(!(LOCK_PPIN & (1 << LOCK_PIN)))
+	if(!IsClosed())
 	{
 		ELM_OFF;
 		timer.Disable(TWaitingForOpen);
 		timer.Disable(TEmergencyOff);
 		timer.Disable(TEmergencyOn);
-		door.SetStatus(DOOR_STATE_EM_OFF_1STOP);
 		comm.Prepare(DOOR_STATE_EM_OFF_1STOP);
+		door.lockerbox_has_been_opened = true;
 	}
 }
 
@@ -165,14 +157,5 @@ void EmergencyOff2()
 void LockerboxOpenedReply()
 {
 	timer.Disable(TLockerboxOpenedReply);
-	door.SetStatus(DOOR_STATE_EM_OFF_1STOP);
 	comm.Prepare(DOOR_STATE_EM_OFF_1STOP);
 }
-/*
-void LockerboxD0()
-{
-	door.lockerbox_has_been_opened1 = false;
-	timer.Disable(TLockerboxD0Timer);
-	door.SetStatus(DOOR_STATE_CLOSED);
-}
-*/
