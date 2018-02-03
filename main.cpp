@@ -15,6 +15,8 @@
 #include "door.h"
 #include "usart.h"
 #include "stamp.h"
+#include "led.h"
+#include "commands_lockerbox.h"
 
 Timer timer(T0_PS_64, 115);
 Transoptors transoptors;
@@ -24,6 +26,7 @@ Door door;
 UsartData usart_data;
 Usart usart;
 Comm comm;
+Led led;
 
 int main()
 {
@@ -40,5 +43,19 @@ int main()
 		comm.frame_length = FRAME_LENGTH_NORMAL;
 	}
 	sei();
-	while(1);
+	led.SetParams(LED_RED1_PIN, LED_RED2_PIN, 2);
+
+	while(1)
+	{
+		if(!IsClosed())
+		{
+			LED_GREEN1_ON;
+			LED_GREEN2_ON;
+		}
+		else
+		{
+			LED_GREEN1_OFF;
+			LED_GREEN2_OFF;
+		}
+	}
 }

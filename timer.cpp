@@ -12,6 +12,7 @@
 #include "electromagnet.h"
 #include "door.h"
 #include "commands_lockerbox.h"
+#include "led.h"
 
 Timer::Timer(T0Prescallers Prescaller, uint8_t Tick)
 {
@@ -158,4 +159,21 @@ void LockerboxOpenedReply()
 {
 	timer.Disable(TLockerboxOpenedReply);
 	comm.Prepare(DOOR_STATE_EM_OFF_1STOP);
+}
+// leds
+void Pulse()
+{
+	led.pulses_cnt++;
+	if(led.pulses_cnt == led.pulses * 2)
+	{
+		led.pulses_cnt = 0;
+		timer.Disable(TLedPulse);
+	}
+	LED_RED_PORT ^= (1 << led.color1);
+	LED_RED_PORT ^= (1 << led.color2);
+}
+
+void Delay()
+{
+	timer.Assign(TLedPulse, LED_PULSE_PERIOD, Pulse);
 }

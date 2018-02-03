@@ -10,20 +10,25 @@
 #include "timer.h"
 #include "door.h"
 #include "comm.h"
+#include "led.h"
 
 void Lockerbox_CheckElmGetStatus()
 {
 	ELM_ON;
 	timer.Assign(TTest_Elm, 1, ElmTestLockerbox);
+	timer.Disable(TLedDelay);
+	timer.Disable(TLedPulse);
+	LED_RED1_OFF;
+	LED_RED2_OFF;
 }
 
 void Lockerbox_GetStatus()
 {
-	if((door.lockerbox_has_been_opened && IsClosed()))
-	{
-		comm.Prepare(DOOR_STATE_OPENED_AND_CLOSED);
-		return;
-	}
+//	if((door.lockerbox_has_been_opened && IsClosed()))
+//	{
+//		comm.Prepare(DOOR_STATE_OPENED_AND_CLOSED);
+//		return;
+//	}
 
 	if(IsClosed())
 		comm.Prepare(DOOR_STATE_CLOSED);

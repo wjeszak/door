@@ -9,6 +9,8 @@
 #include "transoptors.h"
 #include "electromagnet.h"
 #include "timer.h"
+#include "commands_lockerbox.h"
+#include "led.h"
 
 #define POS_TO_OFF 			2
 

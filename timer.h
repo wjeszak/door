@@ -12,7 +12,7 @@
 
 enum TimerId
 {
-	TTest_Elm, TDoorClosed, TElmOffOn, TWaitingForOpen, TEmergencyOff, TEmergencyOn, TLockerboxOpenedReply, TLockerboxD0Timer, TNumberOfTimers
+	TTest_Elm, TDoorClosed, TElmOffOn, TWaitingForOpen, TEmergencyOff, TEmergencyOn, TLockerboxOpenedReply, TLockerboxD0Timer, TLedPulse, TLedDelay, TNumberOfTimers
 };
 
 #define LOCKERBOX_EMERG_ON1				350
@@ -59,6 +59,9 @@ extern void EmergencyOff();
 extern void EmergencyOn();
 extern void EmergencyOff2();
 extern void LockerboxOpenedReply();
+
+extern void Pulse();
+extern void Delay();
 //extern void LockerboxD0();
 
 #endif /* TIMER_H_ */
