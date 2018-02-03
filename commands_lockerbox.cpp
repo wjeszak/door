@@ -19,11 +19,11 @@ void Lockerbox_CheckElmGetStatus()
 
 void Lockerbox_GetStatus()
 {
-//	if((door.lockerbox_has_been_opened && IsClosed()))
-//	{
-//		comm.Prepare(DOOR_STATE_OPENED_AND_CLOSED);
-//		return;
-//	}
+	if((door.lockerbox_has_been_opened && IsClosed()))
+	{
+		comm.Prepare(DOOR_STATE_OPENED_AND_CLOSED);
+		return;
+	}
 
 	if(IsClosed())
 		comm.Prepare(DOOR_STATE_CLOSED);
@@ -33,6 +33,7 @@ void Lockerbox_GetStatus()
 
 void Lockerbox_Open()
 {
+	door.lockerbox_has_been_opened = false;
 	comm.Prepare(0x00); // door ok
 	if(IsClosed())
 	{
